@@ -11,19 +11,9 @@ struct SearchView: View {
     @EnvironmentObject var store: ISDStore
 
     var body: some View {
-        //        if case let .searching(searchQuery) = store.state.search {
-        //            Text(searchQuery)
-        //        }
-        Grid {
-            ForEach(1...10, id: \.self) { id in
-                if id % 3 < 3 {
-                    GridRow {
-                        Text(String(id % 3))
-                    }
-                }
-            }
+        if case let .searching(searchQuery) = store.state.search {
+            Text(searchQuery)
         }
-        .padding(.vertical, 150)
     }
 }
 
