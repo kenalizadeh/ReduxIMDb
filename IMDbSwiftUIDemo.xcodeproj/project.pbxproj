@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		C717A85828AD7D690099B952 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = C717A85728AD7D690099B952 /* Models.swift */; };
 		C7351DF428AE1064009F0398 /* Pages.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7351DF328AE1064009F0398 /* Pages.swift */; };
-		C7351DF728AE5066009F0398 /* CacheAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7351DF628AE5066009F0398 /* CacheAsyncImage.swift */; };
 		C75F784C28A94D43005895A6 /* SimultaneousTapGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75F784B28A94D43005895A6 /* SimultaneousTapGesture.swift */; };
 		C75F785128A951DD005895A6 /* PopularMoviesResponseDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75F785028A951DD005895A6 /* PopularMoviesResponseDTO.swift */; };
 		C75F785328A96229005895A6 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75F785228A96229005895A6 /* Network.swift */; };
@@ -56,7 +55,6 @@
 /* Begin PBXFileReference section */
 		C717A85728AD7D690099B952 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		C7351DF328AE1064009F0398 /* Pages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pages.swift; sourceTree = "<group>"; };
-		C7351DF628AE5066009F0398 /* CacheAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheAsyncImage.swift; sourceTree = "<group>"; };
 		C75F784B28A94D43005895A6 /* SimultaneousTapGesture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimultaneousTapGesture.swift; sourceTree = "<group>"; };
 		C75F785028A951DD005895A6 /* PopularMoviesResponseDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopularMoviesResponseDTO.swift; sourceTree = "<group>"; };
 		C75F785228A96229005895A6 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
@@ -111,18 +109,9 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		C7351DF528AE5056009F0398 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				C7351DF628AE5066009F0398 /* CacheAsyncImage.swift */,
-			);
-			path = Views;
-			sourceTree = "<group>";
-		};
 		C75F784928A94D43005895A6 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				C7351DF528AE5056009F0398 /* Views */,
 				C75F785928A963DF005895A6 /* Extensions */,
 				C75F784A28A94D43005895A6 /* ViewModifiers */,
 			);
@@ -406,7 +395,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C75F784C28A94D43005895A6 /* SimultaneousTapGesture.swift in Sources */,
-				C7351DF728AE5066009F0398 /* CacheAsyncImage.swift in Sources */,
 				C78BFE0328A9480A00871AD8 /* AppContainerView.swift in Sources */,
 				C78BFE0128A946D900871AD8 /* Route.swift in Sources */,
 				C78E5FF628A916850083B373 /* Middleware.swift in Sources */,
