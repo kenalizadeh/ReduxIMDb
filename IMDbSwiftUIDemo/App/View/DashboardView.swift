@@ -102,7 +102,7 @@ struct DashboardView: View {
         }
         .onAppear {
             if movies.isEmpty {
-                networkService.fetch()
+                networkService.send()
             }
         }
         .onReceive(networkService.$responseDTO, perform: { data in

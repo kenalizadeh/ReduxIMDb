@@ -94,7 +94,7 @@ class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDT
             .eraseToAnyPublisher()
     }
 
-    func call(_ params: RequestDTO? = nil) {
+    func send(_ params: RequestDTO? = nil) {
         cancellable = makePublisher(with: params)
             .sink { result in
                 if case let .failure(error) = result {

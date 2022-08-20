@@ -19,9 +19,9 @@ class SearchNetworkService: BaseNetworkService<EmptyRequestDTO, SearchResponseDT
 
     override var path: String { "Search/\(NetworkConstants.apiToken)/\(self._searchQuery)" }
 
-    func call(query: String) {
+    func send(query: String) {
         self._searchQuery = query
         print(":LOG: URL", url.absoluteString, path)
-        super.call()
+        super.send()
     }
 }
