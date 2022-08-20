@@ -18,30 +18,30 @@ enum HTTPMethod: String {
 struct NetworkConstants {
     static let baseURL = URL(string: "https://imdb-api.com/en/API/")!
     static let apiToken: String = "k_wvico135"
+    static let accessTokenStorageKey: String = "NCAccessToken"
+    static let refreshTokenStorageKey: String = "NCRefreshToken"
 }
 
-enum HTTPHeaders {
+enum HTTPHeader {
     case custom(Parameters)
-    //    case authorization
-    //    case refresh
+    case authorization
+    case refresh
 
     var parameters: Parameters {
         switch self {
         case .custom(let parameters):
             return parameters
 
-            //        case .authorization:
-            //            return ["Authorization": "Bearer \(Storage.shared.accessToken ?? "")"]
-            //
-            //        case .refresh:
-            //            return ["Authorization": "Bearer \(Storage.shared.refreshToken ?? "")"]
+        case .authorization:
+            return ["Authorization": "Bearer \(Storage.shared.accessToken ?? "")"]
+
+        case .refresh:
+            return ["Authorization": "Bearer \(Storage.shared.refreshToken ?? "")"]
         }
     }
 }
 
 class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDTOProtocol>: ObservableObject {
-    let backgroundQueue = DispatchQueue(label: "NetworkService.Queue", qos: .userInitiated)
-
     var baseURL: URL { NetworkConstants.baseURL }
     var path: String { "" }
     var cancellable: Cancellable?
@@ -54,25 +54,19 @@ class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDT
 
     var httpMethod: HTTPMethod { .get }
 
+    var httpHeaders: [HTTPHeader] { [] }
+
     @Published
     var responseDTO: ResponseDTO?
 
-    var delay: Double { 0 }
-
-    var headers: [HTTPHeaders] { [] }
-
     private var headerParameters: Parameters {
-        headers.compactMap { $0.parameters }.reduce([:]) { partialResult, params in
+        httpHeaders.compactMap { $0.parameters }.reduce([:]) { partialResult, params in
             partialResult.merging(params, uniquingKeysWith: { (_, params) in params })
         }
     }
 
     @Published
-    var error: Error? {
-        didSet {
-            hasError = error != nil
-        }
-    }
+    var error: Error?
 
     @Published
     var isSuccess: Bool = false
@@ -94,7 +88,7 @@ class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDT
 
                 // Check data
                 let decoded = try JSONDecoder().decode(ResponseDTO.self, from: data)
-
+                self.processData(decoded)
                 return decoded
             }
             .eraseToAnyPublisher()
@@ -107,13 +101,14 @@ class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDT
                     self.error = error
                 }
             } receiveValue: { data in
-                self.processData(data)
                 self.responseDTO = data
                 self.isSuccess = true
             }
     }
 
     func makeRequest(with params: RequestDTO?) -> URLRequest {
+        var urlRequest: URLRequest
+
         switch self.httpMethod {
         case .get:
             var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)!
@@ -121,7 +116,7 @@ class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDT
 
             let dataDict = params.asDictionary()
 
-            for (key,value) in dataDict {
+            for (key, value) in dataDict {
                 let queryItem = URLQueryItem(
                     name: key,
                     value: "\(value)".addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)
@@ -129,7 +124,7 @@ class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDT
                 urlComponents.queryItems?.append(queryItem)
             }
 
-            var urlRequest = URLRequest(
+            urlRequest = URLRequest(
                 url: urlComponents.url!,
                 cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
                 timeoutInterval: 30
@@ -141,10 +136,8 @@ class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDT
             for header in headerParameters {
                 urlRequest.addValue(header.value, forHTTPHeaderField: header.key)
             }
-
-            return urlRequest
         case .post:
-            var urlRequest = URLRequest(
+            urlRequest = URLRequest(
                 url: url,
                 cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
                 timeoutInterval: 30
@@ -152,7 +145,6 @@ class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDT
 
             let dtoAsJson = try! JSONEncoder().encode(params)
 
-            urlRequest.httpMethod = "POST"
             urlRequest.httpBody = dtoAsJson
             urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
             urlRequest.addValue("application/json", forHTTPHeaderField: "Accept")
@@ -160,64 +152,11 @@ class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDT
             for header in headerParameters {
                 urlRequest.addValue(header.value, forHTTPHeaderField: header.key)
             }
-
-            return urlRequest
         }
-    }
 
-    func fetch(_ params: RequestDTO? = nil) {
-        let urlRequest = self.makeRequest(with: params)
+        urlRequest.httpMethod = httpMethod.rawValue
 
-        let task = URLSession(configuration: .default)
-            .dataTask(with: urlRequest) { data, response, error in
-                if let error = error {
-                    print(":LOG:", Self.self, "Error", error)
-                    DispatchQueue.main.async {
-                        self.error = error
-                    }
-                    return
-                }
-
-                guard
-                    let httpResponse = response as? HTTPURLResponse,
-                    [200, 201, 204].contains(httpResponse.statusCode)
-                else {
-                    let error = URLError(.badServerResponse)
-                    print(":LOG:", Self.self, "Error", error)
-                    DispatchQueue.main.async {
-                        self.error = error
-                    }
-                    return
-                }
-
-                guard let data = data else {
-                    let error = URLError(.badServerResponse)
-                    print(":LOG:", Self.self, "Error", error)
-                    DispatchQueue.main.async {
-                        self.error = error
-                    }
-                    return
-                }
-
-                do {
-                    let decoded = try JSONDecoder().decode(ResponseDTO.self, from: data)
-                    print(":LOG:", Self.self, "Data", decoded)
-                    DispatchQueue.main.async {
-                        self.processData(decoded)
-                        self.responseDTO = decoded
-                        self.isSuccess = true
-                    }
-                } catch(let error) {
-                    print(":LOG:", Self.self, "Error", error)
-                    DispatchQueue.main.async {
-                        self.error = error
-                    }
-                }
-            }
-
-        backgroundQueue.asyncAfter(deadline: .now() + delay) {
-            task.resume()
-        }
+        return urlRequest
     }
 
     func processData(_ data: ResponseDTO) {}
