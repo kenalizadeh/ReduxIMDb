@@ -27,6 +27,9 @@ struct DashboardView: View {
     var body: some View {
         ScrollView {
             LazyVStack {
+                Text("Recently Viewed")
+                    .font(.title2)
+
                 ForEach(movies) { movie in
                     NavigationLink(value: Route.movieDetail(movie)) {
                         HStack {
@@ -68,7 +71,8 @@ struct DashboardView: View {
                             ForEach(recentlyViewedMovies) { movie in
                                 NavigationLink(value: Route.movieDetail(movie)) {
                                     AsyncImage(url: URL(string: movie.resizedImageURL)) { image in
-                                        image.resizable()
+                                        image
+                                            .resizable()
                                             .aspectRatio(contentMode: .fit)
                                     } placeholder: {
                                         ProgressView()
@@ -86,7 +90,10 @@ struct DashboardView: View {
                 }
             }
         }
-        .searchable(text: $searchText)
+        .searchable(text: $searchText, prompt: "Search movies") {
+            SearchView($searchText)
+                .environmentObject(store)
+        }
         .navigationTitle("IMDb")
         .toolbar {
             Button("Search") {

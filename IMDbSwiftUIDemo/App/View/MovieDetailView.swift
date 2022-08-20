@@ -16,7 +16,7 @@ struct MovieDetailView: View {
         VStack {
             Text(movie.fullTitle)
 
-            Text(movie.year)
+            // Text(movie.year)
 
             AsyncImage(url: URL(string: movie.resizedImageURL)) { image in
                 image.resizable()

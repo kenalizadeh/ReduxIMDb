@@ -9,7 +9,7 @@ import Foundation
 
 enum Route {
     case main
-    case search
+    case search(SearchQuery)
     case movieDetail(Movie)
 }
 

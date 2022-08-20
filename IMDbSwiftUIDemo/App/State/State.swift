@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 struct ISDAppState {
     var dashboard: ISDDashboardState = .init()
@@ -15,6 +16,7 @@ struct ISDAppState {
 
 enum ISDSearchState {
     case idle
+    case cancelled
     case ready(Movies)
     case searching(SearchQuery)
 }

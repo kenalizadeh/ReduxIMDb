@@ -19,6 +19,8 @@ enum ISDMainScreenAction {
     case moviesLoaded(Movies)
     case markMovieViewed(Movie)
     case search(SearchQuery)
+    case searchResultsLoaded(Movies)
+    case clearSearchResults
 }
 
 enum ISDNavigationAction {

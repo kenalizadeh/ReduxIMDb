@@ -22,19 +22,19 @@ struct NetworkConstants {
 
 enum HTTPHeaders {
     case custom(Parameters)
-//    case authorization
-//    case refresh
+    //    case authorization
+    //    case refresh
 
     var parameters: Parameters {
         switch self {
         case .custom(let parameters):
             return parameters
 
-//        case .authorization:
-//            return ["Authorization": "Bearer \(Storage.shared.accessToken ?? "")"]
-//
-//        case .refresh:
-//            return ["Authorization": "Bearer \(Storage.shared.refreshToken ?? "")"]
+            //        case .authorization:
+            //            return ["Authorization": "Bearer \(Storage.shared.accessToken ?? "")"]
+            //
+            //        case .refresh:
+            //            return ["Authorization": "Bearer \(Storage.shared.refreshToken ?? "")"]
         }
     }
 }
@@ -49,6 +49,8 @@ class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDT
     var url: URL {
         baseURL.appendingPathComponent(path)
     }
+
+    var successStatusCodes: [Int] = [200, 201, 204]
 
     var httpMethod: HTTPMethod { .get }
 
@@ -77,6 +79,39 @@ class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDT
 
     @Published
     var hasError: Bool = false
+
+    func makePublisher(with params: RequestDTO?) -> AnyPublisher<ResponseDTO, Error> {
+        URLSession
+            .shared
+            .dataTaskPublisher(for: makeRequest(with: params))
+            .receive(on: DispatchQueue.main)
+            .tryMap { (data: Data, response: URLResponse) -> ResponseDTO in
+                // Check response status code
+                guard
+                    let httpResponse = response as? HTTPURLResponse,
+                    self.successStatusCodes.contains(httpResponse.statusCode)
+                else { throw URLError(.badServerResponse) }
+
+                // Check data
+                let decoded = try JSONDecoder().decode(ResponseDTO.self, from: data)
+
+                return decoded
+            }
+            .eraseToAnyPublisher()
+    }
+
+    func call(_ params: RequestDTO? = nil) {
+        cancellable = makePublisher(with: params)
+            .sink { result in
+                if case let .failure(error) = result {
+                    self.error = error
+                }
+            } receiveValue: { data in
+                self.processData(data)
+                self.responseDTO = data
+                self.isSuccess = true
+            }
+    }
 
     func makeRequest(with params: RequestDTO?) -> URLRequest {
         switch self.httpMethod {

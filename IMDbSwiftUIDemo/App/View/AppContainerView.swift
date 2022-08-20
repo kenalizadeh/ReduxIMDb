@@ -20,8 +20,8 @@ struct AppContainerView: View {
                         DashboardView()
                             .environmentObject(store)
 
-                    case .search:
-                        SearchView()
+                    case .search(let searchText):
+                        SearchView(.constant(searchText))
                             .environmentObject(store)
 
                     case .movieDetail(let movie):

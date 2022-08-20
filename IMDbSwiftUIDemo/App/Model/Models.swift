@@ -11,7 +11,7 @@ struct Movie {
     let id: String
     let title: String
     let fullTitle: String
-    let year: String
+//    let year: String
     let imageURL: String
     let resizedImageURL: String
 
@@ -19,24 +19,34 @@ struct Movie {
         self.id = dto.id
         self.title = dto.title
         self.fullTitle = dto.fullTitle
-        self.year = dto.year
+//        self.year = dto.year
         self.imageURL = dto.image
         #if MOCK
-            self.resizedImageURL = "https://picsum.photos/200/300"
+        self.resizedImageURL = "https://picsum.photos/200/300"
         #else
-            self.resizedImageURL = "https://imdb-api.com/API/ResizeImage?apiKey=k_wvico135&size=130x180&url=" + dto.image
+        self.resizedImageURL = "https://imdb-api.com/API/ResizeImage?apiKey=k_wvico135&size=130x180&url=" + dto.image
         #endif
     }
 }
 
-extension Movie: Identifiable, Equatable {
+extension Movie: Identifiable, Equatable, Hashable {
     static func == (lhs: Movie, rhs: Movie) -> Bool {
         lhs.id == rhs.id
     }
 }
 
-extension Movie: Hashable {
-    
+extension Movie {
+    init(from dto: SearchResponseMovieDTO) {
+        self.id = dto.id
+        self.title = dto.title
+        self.fullTitle = dto.title
+        self.imageURL = dto.image
+        #if MOCK
+        self.resizedImageURL = "https://picsum.photos/200/300"
+        #else
+        self.resizedImageURL = "https://imdb-api.com/API/ResizeImage?apiKey=k_wvico135&size=130x180&url=" + dto.image
+        #endif
+    }
 }
 
 typealias Movies = [Movie]
