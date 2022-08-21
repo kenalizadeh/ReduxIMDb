@@ -16,8 +16,6 @@ struct MovieDetailView: View {
         VStack {
             Text(movie.fullTitle)
 
-            // Text(movie.year)
-
             AsyncImage(url: URL(string: movie.resizedImageURL)) { image in
                 image.resizable()
                     .aspectRatio(contentMode: .fit)
@@ -25,6 +23,20 @@ struct MovieDetailView: View {
             } placeholder: {
                 ProgressView()
             }
+
+            NavigationLink {
+                MovieReviewsView(movieID: movie.id)
+                    .environmentObject(store)
+            } label: {
+                HStack {
+                    Text("See Reviews")
+                        .font(.title2)
+                        .foregroundColor(Color.blue)
+
+                    Spacer()
+                }
+            }
+
         }
     }
 }

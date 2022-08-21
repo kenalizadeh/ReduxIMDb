@@ -10,15 +10,11 @@ import SwiftUI
 struct DashboardView: View {
     @EnvironmentObject var store: ISDStore
 
-    @ObservedObject
-    var networkService: PopularMoviesNetworkService = .init()
+    @StateObject
+    var viewModel: DashboardViewModel = .init()
 
     @State
     var searchText: String = ""
-
-    var movies: Movies {
-        Array(store.state.dashboard.movies.values.prefix(20))
-    }
 
     var recentlyViewedMovies: Movies {
         store.state.dashboard.recentlyViewedMovies.reversed()
@@ -27,10 +23,14 @@ struct DashboardView: View {
     var body: some View {
         ScrollView {
             LazyVStack {
-                Text("Recently Viewed")
-                    .font(.title2)
+                HStack {
+                    Text("Most Popular Movies")
+                        .font(.largeTitle)
 
-                ForEach(movies) { movie in
+                    Spacer()
+                }.padding(.horizontal, 10)
+
+                ForEach(viewModel.movies) { movie in
                     NavigationLink(value: Route.movieDetail(movie)) {
                         HStack {
                             Text(movie.fullTitle)
@@ -101,14 +101,13 @@ struct DashboardView: View {
             }
         }
         .onAppear {
-            if movies.isEmpty {
-                networkService.send()
+            if viewModel.movies.isEmpty {
+                viewModel
+                    .networkService
+                    .send()
             }
         }
-        .onReceive(networkService.$responseDTO, perform: { data in
-            guard let data = data else { return }
-
-            let movies = data.items.map(Movie.init(from:))
+        .onReceive(viewModel.$movies, perform: { movies in
             store.dispatch(.mainScreen(.moviesLoaded(movies)))
         })
     }

@@ -15,13 +15,17 @@ class PopularMoviesNetworkService: BaseNetworkService<EmptyRequestDTO, PopularMo
 
 // Test URL https://imdb-api.com/en/API/Search/k_wvico135/inception%202010
 class SearchNetworkService: BaseNetworkService<EmptyRequestDTO, SearchResponseDTO> {
-    private var _searchQuery: String = ""
+    var searchQuery: String = ""
 
-    override var path: String { "Search/\(NetworkConstants.apiToken)/\(self._searchQuery)" }
+    override var path: String { "Search/\(NetworkConstants.apiToken)/\(self.searchQuery)" }
+}
 
-    func send(query: String) {
-        self._searchQuery = query
-        print(":LOG: URL", url.absoluteString, path)
-        super.send()
+class MovieReviewsNetworkService: BaseNetworkService<EmptyRequestDTO, MovieReviewsResponseDTO> {
+    let movieID: String
+
+    override var path: String { "Reviews/\(NetworkConstants.apiToken)/\(self.movieID)" }
+
+    init(movieID: String) {
+        self.movieID = movieID
     }
 }

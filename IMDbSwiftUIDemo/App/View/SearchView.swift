@@ -11,11 +11,11 @@ import Combine
 struct SearchView: View {
     @EnvironmentObject var store: ISDStore
 
-    // TODO: - State vs ObservedObject explanation
+    // TODO: - State, StateObject, ObservedObject, Binding explanation
     // SwiftUI uses @State to allow you to modify values inside a struct, which would normally not be allowed because structs are value types.
     // SwiftUI’s @StateObject property wrapper is designed to fill a very specific gap in state management: when you need to create a reference type inside one of your views and make sure it stays alive for use in that view and others you share it with.
     @StateObject
-    var viewState: SearchViewState = .init()
+    var viewModel: SearchViewModel = .init()
 
     @Binding
     var searchText: String
@@ -27,65 +27,69 @@ struct SearchView: View {
     }
 
     var body: some View {
-        if viewState.isSearching {
-            ProgressView {
-                Text("Searching...")
-                    .font(.headline)
-            }
-        } else {
-            ScrollView {
-                LazyVStack {
-                    Text("Search movies")
+        ScrollView {
+            LazyVStack {
+                if viewModel.isSearching {
+                    HStack {
+                        Spacer()
 
-                    if case let .ready(movies) = store.state.search {
-                        ForEach(movies) { movie in
-                            NavigationLink(value: Route.movieDetail(movie)) {
-                                HStack {
-                                    Text(movie.fullTitle)
-                                        .foregroundColor(Color.black)
+                        ProgressView("Searching...")
 
-                                    Spacer()
+                        Spacer()
+                    }
+                }
 
-                                    AsyncImage(url: URL(string: movie.resizedImageURL)) { image in
-                                        image.resizable()
-                                            .aspectRatio(contentMode: .fit)
-                                            .frame(height: 60)
-                                    } placeholder: {
-                                        ProgressView()
-                                    }
+                if case let .ready(movies) = store.state.search {
+                    ForEach(movies) { movie in
+                        NavigationLink(value: Route.movieDetail(movie)) {
+                            HStack {
+                                Text(movie.fullTitle)
+                                    .foregroundColor(Color.black)
+
+                                Spacer()
+
+                                AsyncImage(url: URL(string: movie.resizedImageURL)) { image in
+                                    image.resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(height: 60)
+                                } placeholder: {
+                                    ProgressView()
                                 }
-                                .padding(10)
-                                .frame(height: 60)
                             }
-                            .simultaneousTapGesture {
-                                store.dispatch(.navigate(.movieDetail(movie)))
-                            }
+                            .padding(10)
+                            .frame(height: 60)
+                        }
+                        .simultaneousTapGesture {
+                            store.dispatch(.navigate(.movieDetail(movie)))
                         }
                     }
                 }
             }
-            .onReceive(viewState.networkService.$responseDTO, perform: { data in
-                guard let data = data else { return }
+        }
+        .onChange(of: searchText) { text in
+            store.dispatch(.mainScreen(.search(text)))
+            viewModel.searchText = text
+        }
+        .onReceive(
+            viewModel
+                .$searchText
+                .debounce(for: 0.275, scheduler: DispatchQueue.main)
+        ) { text in
+            guard !text.trimmingCharacters(in: CharacterSet.whitespaces).isEmpty else {
+                store.dispatch(.mainScreen(.clearSearchResults))
+                viewModel
+                    .networkService
+                    .cancel()
 
-                let movies = data.results.map(Movie.init(from:))
-                store.dispatch(.mainScreen(.searchResultsLoaded(movies)))
-            })
-            .onChange(of: searchText) { text in
-                viewState.searchText = text
+                return
             }
-            .onReceive(
-                viewState
-                    .$searchText
-                    .debounce(for: 1, scheduler: DispatchQueue.main)
-            ) { text in
-                guard !text.trimmingCharacters(in: CharacterSet.whitespaces).isEmpty else {
-                    store.dispatch(.mainScreen(.clearSearchResults))
-                    viewState.networkService.cancellable?.cancel()
-                    return
-                }
 
-                viewState.networkService.send(query: text)
-            }
+            viewModel
+                .networkService
+                .send()
+        }
+        .onReceive(viewModel.$movies) { movies in
+            store.dispatch(.mainScreen(.searchResultsLoaded(movies)))
         }
     }
 }

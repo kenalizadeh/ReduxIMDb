@@ -12,7 +12,7 @@ struct AppContainerView: View {
 
     var body: some View {
         NavigationStack {
-        DashboardView()
+            DashboardView()
                 .environmentObject(store)
                 .navigationDestination(for: Route.self) { route in
                     switch route {
@@ -26,6 +26,10 @@ struct AppContainerView: View {
 
                     case .movieDetail(let movie):
                         MovieDetailView(movie: movie)
+                            .environmentObject(store)
+
+                    case .movieReviews(let movieID):
+                        MovieReviewsView(movieID: movieID)
                             .environmentObject(store)
                     }
                 }

@@ -11,6 +11,7 @@ enum Route {
     case main
     case search(SearchQuery)
     case movieDetail(Movie)
+    case movieReviews(movieID: String)
 }
 
 extension Route: Hashable {

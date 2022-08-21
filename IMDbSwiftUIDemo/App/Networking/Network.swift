@@ -42,13 +42,21 @@ enum HTTPHeader {
 }
 
 class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDTOProtocol>: ObservableObject {
-    var baseURL: URL { NetworkConstants.baseURL }
-    var path: String { "" }
-    var cancellable: Cancellable?
+    private var _baseURL: URL { NetworkConstants.baseURL }
 
-    var url: URL {
-        baseURL.appendingPathComponent(path)
+    private var _url: URL {
+        _baseURL.appendingPathComponent(path)
     }
+
+    private var _cancellable: Cancellable?
+
+    private var _headerParameters: Parameters {
+        httpHeaders.compactMap { $0.parameters }.reduce([:]) { partialResult, params in
+            partialResult.merging(params, uniquingKeysWith: { (_, params) in params })
+        }
+    }
+
+    var path: String { "" }
 
     var successStatusCodes: [Int] = [200, 201, 204]
 
@@ -59,12 +67,6 @@ class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDT
     @Published
     var responseDTO: ResponseDTO?
 
-    private var headerParameters: Parameters {
-        httpHeaders.compactMap { $0.parameters }.reduce([:]) { partialResult, params in
-            partialResult.merging(params, uniquingKeysWith: { (_, params) in params })
-        }
-    }
-
     @Published
     var error: Error?
 
@@ -74,11 +76,13 @@ class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDT
     @Published
     var hasError: Bool = false
 
+    @Published
+    var isLoading: Bool = false
+
     func makePublisher(with params: RequestDTO?) -> AnyPublisher<ResponseDTO, Error> {
         URLSession
             .shared
             .dataTaskPublisher(for: makeRequest(with: params))
-            .receive(on: DispatchQueue.main)
             .tryMap { (data: Data, response: URLResponse) -> ResponseDTO in
                 // Check response status code
                 guard
@@ -91,16 +95,28 @@ class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDT
                 self.processData(decoded)
                 return decoded
             }
+            .mapError {
+                print(":LOG: NetworkError:", $0)
+                return $0
+            }
+            .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
 
     func send(_ params: RequestDTO? = nil) {
-        cancellable = makePublisher(with: params)
+        _cancellable?.cancel()
+        isLoading = true
+
+        _cancellable = makePublisher(with: params)
             .sink { result in
+                self.isLoading = false
+
                 if case let .failure(error) = result {
                     self.error = error
                 }
             } receiveValue: { data in
+                self.isLoading = false
+
                 self.responseDTO = data
                 self.isSuccess = true
             }
@@ -111,7 +127,7 @@ class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDT
 
         switch self.httpMethod {
         case .get:
-            var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+            var urlComponents = URLComponents(url: _url, resolvingAgainstBaseURL: false)!
             urlComponents.queryItems = []
 
             let dataDict = params.asDictionary()
@@ -133,12 +149,12 @@ class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDT
             urlRequest.addValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
             urlRequest.addValue("application/json", forHTTPHeaderField: "Accept")
 
-            for header in headerParameters {
+            for header in _headerParameters {
                 urlRequest.addValue(header.value, forHTTPHeaderField: header.key)
             }
         case .post:
             urlRequest = URLRequest(
-                url: url,
+                url: _url,
                 cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
                 timeoutInterval: 30
             )
@@ -149,7 +165,7 @@ class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDT
             urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
             urlRequest.addValue("application/json", forHTTPHeaderField: "Accept")
 
-            for header in headerParameters {
+            for header in _headerParameters {
                 urlRequest.addValue(header.value, forHTTPHeaderField: header.key)
             }
         }
@@ -157,6 +173,10 @@ class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDT
         urlRequest.httpMethod = httpMethod.rawValue
 
         return urlRequest
+    }
+
+    func cancel() {
+        _cancellable?.cancel()
     }
 
     func processData(_ data: ResponseDTO) {}
