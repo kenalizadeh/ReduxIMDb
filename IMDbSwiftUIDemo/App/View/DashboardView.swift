@@ -31,14 +31,14 @@ struct DashboardView: View {
                 }.padding(.horizontal, 10)
 
                 ForEach(viewModel.movies) { movie in
-                    NavigationLink(value: Route.movieDetail(movie)) {
+                    NavigationLink(value: Route.movieDetail(movieID: movie.id)) {
                         HStack {
                             Text(movie.fullTitle)
                                 .foregroundColor(Color.black)
 
                             Spacer()
 
-                            AsyncImage(url: URL(string: movie.resizedImageURL)) { image in
+                            AsyncImage(url: URL(string: movie.imageURL.resized(.small))) { image in
                                 image.resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .frame(height: 60)
@@ -69,8 +69,8 @@ struct DashboardView: View {
                     ScrollView(.horizontal) {
                         LazyHStack {
                             ForEach(recentlyViewedMovies) { movie in
-                                NavigationLink(value: Route.movieDetail(movie)) {
-                                    AsyncImage(url: URL(string: movie.resizedImageURL)) { image in
+                                NavigationLink(value: Route.movieDetail(movieID: movie.id)) {
+                                    AsyncImage(url: URL(string: movie.imageURL.resized(.medium))) { image in
                                         image
                                             .resizable()
                                             .aspectRatio(contentMode: .fit)

@@ -10,39 +10,95 @@ import SwiftUI
 struct MovieDetailView: View {
     @EnvironmentObject var store: ISDStore
 
-    let movie: Movie
+    @StateObject
+    var viewModel: MovieDetailViewModel
+
+    let movieID: String
+
+    init(movieID: String) {
+        self.movieID = movieID
+        self._viewModel = StateObject(wrappedValue: MovieDetailViewModel(movieID: movieID))
+    }
 
     var body: some View {
-        VStack {
-            Text(movie.fullTitle)
+        GeometryReader { proxy in
+            VStack {
+                if let movie = viewModel.movie {
+                    VStack {
+                        AsyncImage(url: URL(string: movie.image.resized(.large))) { image in
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                        } placeholder: {
+                            ProgressView()
+                        }
+                        .frame(width: proxy.size.width)
+                        .clipped()
 
-            AsyncImage(url: URL(string: movie.resizedImageURL)) { image in
-                image.resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(height: 60)
-            } placeholder: {
-                ProgressView()
-            }
+                        NavigationLink {
+                            MovieReviewsView(movieID: movie.id)
+                                .environmentObject(store)
+                        } label: {
+                            HStack {
+                                Text("See Reviews")
+                                    .font(.footnote)
+                                    .foregroundColor(Color.blue)
 
-            NavigationLink {
-                MovieReviewsView(movieID: movie.id)
-                    .environmentObject(store)
-            } label: {
-                HStack {
-                    Text("See Reviews")
-                        .font(.title2)
-                        .foregroundColor(Color.blue)
+                                Spacer()
+                            }
+                            .padding(.horizontal, 10)
+                        }
+                    }
+                    .ignoresSafeArea(edges: .top)
 
-                    Spacer()
+                    if !movie.similarMovies.isEmpty {
+                        Divider()
+                            .padding(.top, 10)
+                            .padding(.horizontal, 20)
+
+                        HStack {
+                            Text("Similar Movies")
+                                .font(.title2)
+
+                            Spacer()
+                        }
+                        .padding(.horizontal, 10)
+
+                        ScrollView(.horizontal) {
+                            LazyHStack {
+                                ForEach(movie.similarMovies) { movie in
+                                    NavigationLink(value: Route.movieDetail(movieID: movie.id)) {
+                                        AsyncImage(url: URL(string: movie.image.resized(.medium))) { image in
+                                            image
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fit)
+                                        } placeholder: {
+                                            ProgressView()
+                                        }
+                                        .frame(height: proxy.size.height / 3)
+                                        .padding(10)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else if viewModel.hasError {
+                    Text("Something went wrong")
+                } else {
+                    ProgressView("Loading...")
+                        .onAppear {
+                            viewModel
+                                .networkService
+                                .send()
+                        }
                 }
             }
-
         }
     }
 }
 
 struct MovieDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        MovieDetailView(movie: Movie.init(from: .init(id: "", rank: "", rankUpDown: "", title: "", fullTitle: "", year: "", image: "", imDBRating: nil, imDBRatingCount: nil, crew: "")))
+        MovieDetailView(movieID: "movieID")
     }
 }

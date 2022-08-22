@@ -29,3 +29,13 @@ class MovieReviewsNetworkService: BaseNetworkService<EmptyRequestDTO, MovieRevie
         self.movieID = movieID
     }
 }
+
+class MovieDetailNetworkService: BaseNetworkService<EmptyRequestDTO, MovieDetailResponseDTO> {
+    let movieID: String
+
+    override var path: String { "Title/\(NetworkConstants.apiToken)/\(self.movieID)/FullCast,Images" }
+
+    init(movieID: String) {
+        self.movieID = movieID
+    }
+}

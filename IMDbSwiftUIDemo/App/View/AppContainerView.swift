@@ -24,8 +24,8 @@ struct AppContainerView: View {
                         SearchView(.constant(searchText))
                             .environmentObject(store)
 
-                    case .movieDetail(let movie):
-                        MovieDetailView(movie: movie)
+                    case .movieDetail(let movieID):
+                        MovieDetailView(movieID: movieID)
                             .environmentObject(store)
 
                     case .movieReviews(let movieID):

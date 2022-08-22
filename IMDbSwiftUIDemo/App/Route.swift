@@ -10,7 +10,7 @@ import Foundation
 enum Route {
     case main
     case search(SearchQuery)
-    case movieDetail(Movie)
+    case movieDetail(movieID: String)
     case movieReviews(movieID: String)
 }
 

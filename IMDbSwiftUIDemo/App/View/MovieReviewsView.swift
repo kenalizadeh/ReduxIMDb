@@ -37,28 +37,27 @@ struct MovieReviewsView: View {
                     VStack {
                         HStack {
                             Text(review.title)
-                                .font(.title2)
+                                .font(.title3)
                                 .lineLimit(2)
-                                .animation(Animation.easeInOut, value: viewModel.expandedReviewID)
 
                             Spacer()
                         }
+                        .padding(.bottom, 10)
 
                         if review.id == viewModel.expandedReviewID {
                             Text(review.content)
                                 .font(.footnote)
                                 .lineLimit(nil)
                                 .multilineTextAlignment(.leading)
-                                .animation(Animation.easeInOut, value: viewModel.expandedReviewID)
                         } else {
                             Text(review.content)
                                 .font(.footnote)
                                 .lineLimit(1)
-                                .animation(Animation.easeInOut, value: viewModel.expandedReviewID)
                         }
                     }
                     .padding(10)
                     .background(Color.gray.opacity(0.1))
+                    .animation(Animation.easeInOut, value: viewModel.expandedReviewID)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     .padding(10)
                     .simultaneousTapGesture {

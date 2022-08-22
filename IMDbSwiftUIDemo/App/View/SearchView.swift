@@ -41,14 +41,14 @@ struct SearchView: View {
 
                 if case let .ready(movies) = store.state.search {
                     ForEach(movies) { movie in
-                        NavigationLink(value: Route.movieDetail(movie)) {
+                        NavigationLink(value: Route.movieDetail(movieID: movie.id)) {
                             HStack {
                                 Text(movie.fullTitle)
                                     .foregroundColor(Color.black)
 
                                 Spacer()
 
-                                AsyncImage(url: URL(string: movie.resizedImageURL)) { image in
+                                AsyncImage(url: URL(string: movie.imageURL.resized(.small))) { image in
                                     image.resizable()
                                         .aspectRatio(contentMode: .fit)
                                         .frame(height: 60)
