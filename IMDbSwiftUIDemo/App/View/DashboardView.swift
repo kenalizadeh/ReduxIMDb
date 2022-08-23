@@ -30,7 +30,7 @@ struct DashboardView: View {
                     Spacer()
                 }.padding(.horizontal, 10)
 
-                ForEach(viewModel.movies) { movie in
+                ForEach(viewModel.movies.prefix(20)) { movie in
                     NavigationLink(value: Route.movieDetail(movieID: movie.id)) {
                         HStack {
                             Text(movie.fullTitle)
@@ -48,9 +48,6 @@ struct DashboardView: View {
                         }
                         .padding(10)
                         .frame(height: 60)
-                    }
-                    .simultaneousTapGesture {
-                        store.dispatch(.navigate(.movieDetail(movie)))
                     }
                 }
 
@@ -81,9 +78,6 @@ struct DashboardView: View {
                                     .padding(10)
                                 }
                                 .animation(Animation.easeIn(duration: 0.5), value: recentlyViewedMovies)
-                                .simultaneousTapGesture {
-                                    store.dispatch(.navigate(.movieDetail(movie)))
-                                }
                             }
                         }
                     }
@@ -95,11 +89,6 @@ struct DashboardView: View {
                 .environmentObject(store)
         }
         .navigationTitle("IMDb")
-        .toolbar {
-            Button("Search") {
-                store.dispatch(.navigate(.search("query")))
-            }
-        }
         .onAppear {
             if viewModel.movies.isEmpty {
                 viewModel

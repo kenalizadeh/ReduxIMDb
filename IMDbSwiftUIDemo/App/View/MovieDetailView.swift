@@ -35,21 +35,26 @@ struct MovieDetailView: View {
                         .frame(width: proxy.size.width)
                         .clipped()
 
-                        NavigationLink {
-                            MovieReviewsView(movieID: movie.id)
-                                .environmentObject(store)
-                        } label: {
-                            HStack {
+                        HStack {
+                            NavigationLink {
+                                MovieReviewsView(movieID: movie.id)
+                                    .environmentObject(store)
+                            } label: {
                                 Text("See Reviews")
+                                    .foregroundColor(.white)
+                                    .padding(10)
+                                    .background(Color.blue)
+                                    .clipShape(RoundedRectangle(cornerRadius: 4))
                                     .font(.footnote)
-                                    .foregroundColor(Color.blue)
-
-                                Spacer()
                             }
-                            .padding(.horizontal, 10)
                         }
+                        .padding(.horizontal, 10)
                     }
-                    .ignoresSafeArea(edges: .top)
+                    .navigationBarTitleDisplayMode(NavigationBarItem.TitleDisplayMode.inline)
+                    .navigationTitle(movie.title)
+                    .onAppear {
+                        store.dispatch(.movieDetail(.movieDetailLoaded(Movie(from: movie))))
+                    }
 
                     if !movie.similarMovies.isEmpty {
                         Divider()

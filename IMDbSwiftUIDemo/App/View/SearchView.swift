@@ -59,15 +59,12 @@ struct SearchView: View {
                             .padding(10)
                             .frame(height: 60)
                         }
-                        .simultaneousTapGesture {
-                            store.dispatch(.navigate(.movieDetail(movie)))
-                        }
                     }
                 }
             }
         }
         .onChange(of: searchText) { text in
-            store.dispatch(.mainScreen(.search(text)))
+            store.dispatch(.search(.search(text)))
             viewModel.searchText = text
         }
         .onReceive(
@@ -76,7 +73,7 @@ struct SearchView: View {
                 .debounce(for: 0.275, scheduler: DispatchQueue.main)
         ) { text in
             guard !text.trimmingCharacters(in: CharacterSet.whitespaces).isEmpty else {
-                store.dispatch(.mainScreen(.clearSearchResults))
+                store.dispatch(.search(.clearSearchResults))
                 viewModel
                     .networkService
                     .cancel()
@@ -89,7 +86,7 @@ struct SearchView: View {
                 .send()
         }
         .onReceive(viewModel.$movies) { movies in
-            store.dispatch(.mainScreen(.searchResultsLoaded(movies)))
+            store.dispatch(.search(.searchResultsLoaded(movies)))
         }
     }
 }

@@ -15,35 +15,31 @@ let isdReducer: Reducer<ISDAppState, ISDAction> = { state, action in
     switch action {
     case .launch:
         break
-
-    case .mainScreen(let mainScreenAction):
-        switch mainScreenAction {
+    case .mainScreen(let action):
+        switch action {
         case .moviesLoaded(let movies):
-            state.dashboard.movies.addPage(totalPages: 5, values: movies)
+            state.dashboard.movies = movies
 
         case .markMovieViewed(let movie):
             guard !state.dashboard.recentlyViewedMovies.contains(movie) else { break }
 
             state.dashboard.recentlyViewedMovies.append(movie)
+        }
+    case .search(let action):
+        switch action {
+        case .search(let query):
+            state.search = .searching(query)
 
         case .searchResultsLoaded(let movies):
             state.search = .ready(movies)
 
         case .clearSearchResults:
             state.search = .idle
-
-        default: break
         }
-    case .navigate(let navigationAction):
-        switch navigationAction {
-        case .back:
-            break
-
-        case .search(let query):
-            state.search = .searching(query)
-
-        case .movieDetail(let movieID):
-            break
+    case .movieDetail(let action):
+        switch action {
+        case .movieDetailLoaded(let movie):
+            state.movieDetail.movie = movie
         }
     }
 

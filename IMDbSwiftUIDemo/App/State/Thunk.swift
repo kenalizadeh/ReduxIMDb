@@ -11,9 +11,8 @@ import Combine
 typealias Thunk<State, Action> = (State, Action) -> AnyPublisher<Action, Never>
 
 let recentlyViewedMoviesThunk: Thunk<ISDAppState, ISDAction> = { _, action in
-    if case let .navigate(.movieDetail(movie)) = action {
+    if case let .movieDetail(.movieDetailLoaded(movie)) = action {
         return Just(ISDAction.mainScreen(.markMovieViewed(movie)))
-            .delay(for: 0.3, scheduler: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
 

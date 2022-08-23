@@ -28,6 +28,13 @@ extension Movie {
         self.fullTitle = dto.title
         self.imageURL = dto.image
     }
+
+    init(from detail: MovieDetail) {
+        self.id = detail.id
+        self.title = detail.title
+        self.fullTitle = detail.fullTitle
+        self.imageURL = detail.image
+    }
 }
 
 extension Movie: Identifiable, Equatable, Hashable {

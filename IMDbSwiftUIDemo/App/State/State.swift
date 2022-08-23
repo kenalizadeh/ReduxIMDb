@@ -16,13 +16,12 @@ struct ISDAppState {
 
 enum ISDSearchState {
     case idle
-    case cancelled
     case ready(Movies)
     case searching(SearchQuery)
 }
 
 struct ISDDashboardState {
-    var movies: Pages<Movie> = .init()
+    var movies: Movies = []
     var recentlyViewedMovies: Movies = []
     var searchQuery: String = ""
 }

@@ -12,19 +12,28 @@ typealias SearchQuery = String
 enum ISDAction {
     case launch
     case mainScreen(ISDMainScreenAction)
-    case navigate(ISDNavigationAction)
+    case search(ISDSearchAction)
+    case movieDetail(ISDMovieDetailAction)
+//    case navigate(ISDNavigationAction)
 }
 
 enum ISDMainScreenAction {
     case moviesLoaded(Movies)
     case markMovieViewed(Movie)
+}
+
+enum ISDSearchAction {
     case search(SearchQuery)
     case searchResultsLoaded(Movies)
     case clearSearchResults
 }
 
-enum ISDNavigationAction {
-    case back
-    case search(SearchQuery)
-    case movieDetail(Movie)
+enum ISDMovieDetailAction {
+    case movieDetailLoaded(Movie)
 }
+
+//enum ISDNavigationAction {
+//    case back
+//    case search(SearchQuery)
+//    case movieDetail(Movie)
+//}

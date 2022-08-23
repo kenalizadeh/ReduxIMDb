@@ -15,17 +15,12 @@ let searchMiddleware: Middleware<ISDAppState, ISDAction> = { state, action in
     switch action {
     case .launch:
         break
-    case .mainScreen(let mainScreenAction):
+    case .mainScreen(_):
         break
-    case .navigate(let navigationAction):
-        switch navigationAction {
-        case .back:
-            break
-        case .search(let query):
-            break
-        case .movieDetail(let movie):
-            break
-        }
+    case .search(_):
+        break
+    case .movieDetail(_):
+        break
     }
 
     return state
