@@ -38,16 +38,13 @@ class Store<State, Action>: ObservableObject {
 
     private func dispatch(_ currentState: State, _ action: Action) {
         // Middlewares intercept and modify the state if necessary before the action passes to the reducer.
-        // TODO: - Write Description
         let newState = middlewares.reduce(into: currentState) { state, middleware in
             state = middleware(state, action)
         }
 
-        // TODO: - Write Description
         let finalState = reducer(newState, action)
 
         // Thunks handled after the action passes throught the reducer.
-        // TODO: - Write Description
         thunks.forEach { thunk in
             thunk(finalState, action)
                 .receive(on: DispatchQueue.main)

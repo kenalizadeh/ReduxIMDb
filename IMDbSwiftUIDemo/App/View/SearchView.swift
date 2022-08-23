@@ -11,7 +11,6 @@ import Combine
 struct SearchView: View {
     @EnvironmentObject var store: ISDStore
 
-    // TODO: - State, StateObject, ObservedObject, Binding explanation
     // SwiftUI uses @State to allow you to modify values inside a struct, which would normally not be allowed because structs are value types.
     // SwiftUI’s @StateObject property wrapper is designed to fill a very specific gap in state management: when you need to create a reference type inside one of your views and make sure it stays alive for use in that view and others you share it with.
     @StateObject

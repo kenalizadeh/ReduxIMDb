@@ -14,7 +14,6 @@ enum ISDAction {
     case mainScreen(ISDMainScreenAction)
     case search(ISDSearchAction)
     case movieDetail(ISDMovieDetailAction)
-//    case navigate(ISDNavigationAction)
 }
 
 enum ISDMainScreenAction {
@@ -31,9 +30,3 @@ enum ISDSearchAction {
 enum ISDMovieDetailAction {
     case movieDetailLoaded(Movie)
 }
-
-//enum ISDNavigationAction {
-//    case back
-//    case search(SearchQuery)
-//    case movieDetail(Movie)
-//}
