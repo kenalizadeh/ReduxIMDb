@@ -18,7 +18,8 @@ struct IMDbSwiftUIDemoApp: App {
         thunks: [
             recentlyViewedMoviesThunk,
             mostPopularMoviesThunk,
-            searchMoviesThunk
+            searchMoviesThunk,
+            movieDetailThunk
         ]
     )
 

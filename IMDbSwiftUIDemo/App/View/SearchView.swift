@@ -42,7 +42,7 @@ struct SearchView: View {
 
                 if let movies = store.state.search.searchResults {
                     ForEach(movies) { movie in
-                        NavigationLink(value: Route.movieDetail(movieID: movie.id)) {
+                        NavigationLink(value: Route.movieDetail(movie.id)) {
                             HStack {
                                 Text(movie.fullTitle)
                                     .foregroundColor(Color.black)

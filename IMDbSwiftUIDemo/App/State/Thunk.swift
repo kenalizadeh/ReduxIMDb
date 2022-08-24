@@ -29,8 +29,8 @@ let mostPopularMoviesThunk: Thunk<ISDAppState, ISDAction> = { state, action in
 }
 
 let recentlyViewedMoviesThunk: Thunk<ISDAppState, ISDAction> = { _, action in
-    if case let .movieDetail(.movieDetailLoaded(movie)) = action {
-        return Just(ISDAction.mainScreen(.markMovieViewed(movie)))
+    if case let .movieDetail(.movieDetailLoaded(movieDetail)) = action {
+        return Just(ISDAction.mainScreen(.markMovieViewed(Movie.init(from: movieDetail))))
             .eraseToAnyPublisher()
     }
 
@@ -52,5 +52,23 @@ let searchMoviesThunk: Thunk<ISDAppState, ISDAction> = { state, action in
         .map { $0.map(Movie.init(from:)) }
         .map({ ISDAction.search(.searchResultsLoaded($0)) })
         .catch({ Just(ISDAction.search(.showError($0))) })
+        .eraseToAnyPublisher()
+}
+
+let movieDetailThunk: Thunk<ISDAppState, ISDAction> = { state, action in
+    guard case let .movieDetail(.fetchData(movieID)) = action else { return Empty().eraseToAnyPublisher() }
+
+    let networkService = MovieDetailNetworkService(movieID: movieID)
+
+    defer {
+        networkService.send()
+    }
+
+    return networkService
+        .makePublisher()
+        .compactMap { $0 }
+        .map(MovieDetail.init(from:))
+        .map({ ISDAction.movieDetail(.movieDetailLoaded($0)) })
+        .catch({ Just(ISDAction.movieDetail(.showError($0))) })
         .eraseToAnyPublisher()
 }

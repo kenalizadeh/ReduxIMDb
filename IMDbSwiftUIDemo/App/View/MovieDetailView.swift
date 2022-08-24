@@ -10,20 +10,12 @@ import SwiftUI
 struct MovieDetailView: View {
     @EnvironmentObject var store: ISDStore
 
-    @StateObject
-    var viewModel: MovieDetailViewModel
-
     let movieID: String
-
-    init(movieID: String) {
-        self.movieID = movieID
-        self._viewModel = StateObject(wrappedValue: MovieDetailViewModel(movieID: movieID))
-    }
 
     var body: some View {
         GeometryReader { proxy in
             VStack {
-                if let movie = viewModel.movie {
+                if let movie = store.state.movieDetail.movie {
                     VStack {
                         AsyncImage(url: URL(string: movie.image.resized(.large))) { image in
                             image
@@ -52,8 +44,8 @@ struct MovieDetailView: View {
                     }
                     .navigationBarTitleDisplayMode(NavigationBarItem.TitleDisplayMode.inline)
                     .navigationTitle(movie.title)
-                    .onAppear {
-                        store.dispatch(.movieDetail(.movieDetailLoaded(Movie(from: movie))))
+                    .onDisappear {
+                        store.dispatch(ISDAction.movieDetail(.clear))
                     }
 
                     if !movie.similarMovies.isEmpty {
@@ -72,7 +64,7 @@ struct MovieDetailView: View {
                         ScrollView(.horizontal) {
                             LazyHStack {
                                 ForEach(movie.similarMovies) { movie in
-                                    NavigationLink(value: Route.movieDetail(movieID: movie.id)) {
+                                    NavigationLink(value: Route.movieDetail(movie.id)) {
                                         HorizontalMovieCell(movie: movie)
                                             .frame(width: proxy.size.height / 6, height: proxy.size.height / 3)
                                             .clipShape(RoundedRectangle(cornerRadius: 4))
@@ -82,22 +74,27 @@ struct MovieDetailView: View {
                             .padding(.horizontal, 10)
                             .frame(height: proxy.size.height / 3)
                         }
+                    } else {
+                        Text("No similar movies available")
                     }
-                } else if viewModel.hasError {
+                } else if let error = store.state.movieDetail.error {
                     Button {
-                        viewModel
-                            .networkService
-                            .send()
+                        store.dispatch(.movieDetail(.fetchData(self.movieID)))
                     } label: {
-                        Text("Something went wrong. Please try again")
+                        Text(error.localizedDescription)
                     }
+                } else if store.state.movieDetail.isLoading {
+                    HStack {
+                        Spacer()
 
+                        ProgressView("Loading...")
+
+                        Spacer()
+                    }
                 } else {
-                    ProgressView("Loading...")
+                    Color.clear
                         .onAppear {
-                            viewModel
-                                .networkService
-                                .send()
+                            store.dispatch(.movieDetail(.fetchData(self.movieID)))
                         }
                 }
             }

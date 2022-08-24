@@ -35,6 +35,13 @@ extension Movie {
         self.fullTitle = detail.fullTitle
         self.imageURL = detail.image
     }
+
+    init(from dto: SimilarMoviesDTO) {
+        self.id = dto.id
+        self.title = dto.title
+        self.fullTitle = dto.title
+        self.imageURL = dto.image
+    }
 }
 
 extension Movie: Identifiable, Equatable, Hashable {

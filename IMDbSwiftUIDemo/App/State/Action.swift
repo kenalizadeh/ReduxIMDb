@@ -8,6 +8,7 @@
 import Foundation
 
 typealias SearchQuery = String
+typealias MovieID = String
 
 enum ISDAction {
     case launch
@@ -30,5 +31,8 @@ enum ISDSearchAction {
 }
 
 enum ISDMovieDetailAction {
-    case movieDetailLoaded(Movie)
+    case fetchData(MovieID)
+    case movieDetailLoaded(MovieDetail)
+    case clear
+    case showError(Error)
 }

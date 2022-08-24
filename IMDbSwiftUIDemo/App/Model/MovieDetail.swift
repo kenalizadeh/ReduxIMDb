@@ -22,7 +22,7 @@ struct MovieDetail: Identifiable {
     let stars: String
     let actors: [Actor]
     let genres: String
-    let similarMovies: [SimilarMovie]
+    let similarMovies: Movies
     let imageURLs: [String]
 }
 
@@ -42,7 +42,7 @@ extension MovieDetail {
         self.stars = dto.stars
         self.actors = dto.actorList.map(MovieDetail.Actor.init(from:))
         self.genres = dto.genres
-        self.similarMovies = dto.similars.map(MovieDetail.SimilarMovie.init(from:))
+        self.similarMovies = dto.similars.map(Movie.init(from:))
         self.imageURLs = dto.images.items.map(\.image)
     }
 }
@@ -59,26 +59,6 @@ extension MovieDetail {
             self.name = dto.name
             self.character = dto.asCharacter
             self.image = dto.image
-        }
-    }
-}
-
-extension MovieDetail {
-    struct SimilarMovie: Identifiable, Hashable {
-        let id: String
-        let title: String
-        let image: String
-
-        init(from dto: SimilarMoviesDTO) {
-            self.id = dto.id
-            self.title = dto.title
-            self.image = dto.image
-        }
-
-        init(from movie: Movie) {
-            self.id = movie.id
-            self.title = movie.title
-            self.image = movie.imageURL
         }
     }
 }

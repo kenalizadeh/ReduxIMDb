@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct HorizontalMovieCell: View {
-    let movie: MovieDetail.SimilarMovie
+    let movie: Movie
 
     var body: some View {
         VStack(spacing: 0) {
-            AsyncImage(url: URL(string: self.movie.image.resized(.medium))) { image in
+            AsyncImage(url: URL(string: self.movie.imageURL.resized(.medium))) { image in
                 image
                     .resizable()
                     .aspectRatio(contentMode: .fill)

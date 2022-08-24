@@ -28,7 +28,10 @@ struct ISDDashboardState {
 }
 
 struct ISDMovieDetailState {
-    var movie: Movie?
+    var movieID: MovieID?
+    var movie: MovieDetail?
+    var isLoading: Bool = false
+    var error: Error? = nil
 }
 
 enum ISDScreenState {
