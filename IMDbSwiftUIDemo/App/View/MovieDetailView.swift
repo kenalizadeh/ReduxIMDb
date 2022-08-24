@@ -63,7 +63,7 @@ struct MovieDetailView: View {
 
                         HStack {
                             Text("Similar Movies")
-                                .font(.title2)
+                                .font(.title)
 
                             Spacer()
                         }
@@ -73,22 +73,25 @@ struct MovieDetailView: View {
                             LazyHStack {
                                 ForEach(movie.similarMovies) { movie in
                                     NavigationLink(value: Route.movieDetail(movieID: movie.id)) {
-                                        AsyncImage(url: URL(string: movie.image.resized(.medium))) { image in
-                                            image
-                                                .resizable()
-                                                .aspectRatio(contentMode: .fit)
-                                        } placeholder: {
-                                            ProgressView()
-                                        }
-                                        .frame(height: proxy.size.height / 3)
-                                        .padding(10)
+                                        HorizontalMovieCell(movie: movie)
+                                            .frame(width: proxy.size.height / 6, height: proxy.size.height / 3)
+                                            .clipShape(RoundedRectangle(cornerRadius: 4))
                                     }
                                 }
                             }
+                            .padding(.horizontal, 10)
+                            .frame(height: proxy.size.height / 3)
                         }
                     }
                 } else if viewModel.hasError {
-                    Text("Something went wrong")
+                    Button {
+                        viewModel
+                            .networkService
+                            .send()
+                    } label: {
+                        Text("Something went wrong. Please try again")
+                    }
+
                 } else {
                     ProgressView("Loading...")
                         .onAppear {
@@ -104,6 +107,18 @@ struct MovieDetailView: View {
 
 struct MovieDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        MovieDetailView(movieID: "movieID")
+        MovieDetailView(movieID: "tt13314558")
+            .environmentObject(
+                ISDStore(
+                    initial: ISDAppState(),
+                    reducer: isdReducer,
+                    middlewares: [
+                        searchMiddleware
+                    ],
+                    thunks: [
+                        recentlyViewedMoviesThunk
+                    ]
+                )
+            )
     }
 }

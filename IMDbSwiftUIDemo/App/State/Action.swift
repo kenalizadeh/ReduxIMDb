@@ -22,9 +22,11 @@ enum ISDMainScreenAction {
 }
 
 enum ISDSearchAction {
+    case queryUserInput(SearchQuery)
     case search(SearchQuery)
     case searchResultsLoaded(Movies)
-    case clearSearchResults
+    case cancelSearch
+    case showError(Error)
 }
 
 enum ISDMovieDetailAction {

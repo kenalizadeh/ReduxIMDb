@@ -27,14 +27,27 @@ let isdReducer: Reducer<ISDAppState, ISDAction> = { state, action in
         }
     case .search(let action):
         switch action {
+        case .queryUserInput(let query):
+            state.search.searchUserInput = query
+
         case .search(let query):
-            state.search = .searching(query)
+            guard !state.search.searchUserInput.isEmpty else { break }
+
+            state.search.activeSearchQuery = query
+            state.search.isSearching = true
 
         case .searchResultsLoaded(let movies):
-            state.search = .ready(movies)
+            state.search.searchResults = movies
+            state.search.isSearching = false
 
-        case .clearSearchResults:
-            state.search = .idle
+        case .cancelSearch:
+            state.search.searchUserInput = ""
+            state.search.activeSearchQuery = ""
+            state.search.isSearching = false
+            state.search.searchResults = []
+
+        case .showError(let error):
+            state.search.error = error
         }
     case .movieDetail(let action):
         switch action {

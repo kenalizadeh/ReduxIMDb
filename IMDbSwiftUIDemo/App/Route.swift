@@ -8,8 +8,7 @@
 import Foundation
 
 enum Route {
-    case main
-    case search(SearchQuery)
+    case mainView
     case movieDetail(movieID: String)
     case movieReviews(movieID: String)
 }
@@ -17,10 +16,10 @@ enum Route {
 extension Route: Hashable {
     func hash(into hasher: inout Hasher) {
         switch self {
-        case .movieDetail(let value):
+        case .movieDetail(let value), .movieReviews(let value):
             hasher.combine(value)
+
         default:
-            // you can `combine` with some `Hashable` constant, but here it's ok just to skip
             hasher.combine(String(describing: Self.self))
         }
     }

@@ -16,12 +16,8 @@ struct AppContainerView: View {
                 .environmentObject(store)
                 .navigationDestination(for: Route.self) { route in
                     switch route {
-                    case .main:
+                    case .mainView:
                         DashboardView()
-                            .environmentObject(store)
-
-                    case .search(let searchText):
-                        SearchView(.constant(searchText))
                             .environmentObject(store)
 
                     case .movieDetail(let movieID):
@@ -33,6 +29,9 @@ struct AppContainerView: View {
                             .environmentObject(store)
                     }
                 }
+        }
+        .onAppear {
+            store.dispatch(.launch)
         }
     }
 }

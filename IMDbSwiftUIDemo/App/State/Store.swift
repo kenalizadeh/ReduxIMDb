@@ -37,13 +37,18 @@ class Store<State, Action>: ObservableObject {
     }
 
     private func dispatch(_ currentState: State, _ action: Action) {
-        // Middlewares intercept and modify the state if necessary before the action passes to the reducer.
-        let newState = middlewares.reduce(into: currentState) { state, middleware in
-            state = middleware(state, action)
+        // Middlewares intercept and replace the state with a modified one if necessary before the action and state is passed to the reducer.
+        let newState = middlewares.reduce(currentState) { partialResult, middleware in
+            middleware(partialResult, action)
         }
 
+        // In Redux, a reducer is a pure function that takes the current state and the action to execute as parameters and produces a new state.
+        // A pure function is a function that, when given the same inputs, produces the same outputs and has no side effects.
+        // A reducer will receive everything that it needs as parameters. It has no ties to any outside entities.
+        // It does not change the existing state. It only produces a new State value.
         let finalState = reducer(newState, action)
 
+        // Thunks are useful for producing side effects, which neither reducer nor middlewares can or should do.
         // Thunks handled after the action passes throught the reducer.
         thunks.forEach { thunk in
             thunk(finalState, action)

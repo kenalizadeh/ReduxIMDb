@@ -17,6 +17,10 @@ class PopularMoviesNetworkService: BaseNetworkService<EmptyRequestDTO, PopularMo
 class SearchNetworkService: BaseNetworkService<EmptyRequestDTO, SearchResponseDTO> {
     var searchQuery: String = ""
 
+    init(searchQuery: String) {
+        self.searchQuery = searchQuery
+    }
+
     override var path: String { "Search/\(NetworkConstants.apiToken)/\(self.searchQuery)" }
 }
 

@@ -11,19 +11,20 @@ import Combine
 struct ISDAppState {
     var dashboard: ISDDashboardState = .init()
     var movieDetail: ISDMovieDetailState = .init()
-    var search: ISDSearchState = .idle
+    var search: ISDSearchState = .init()
 }
 
-enum ISDSearchState {
-    case idle
-    case ready(Movies)
-    case searching(SearchQuery)
+struct ISDSearchState {
+    var isSearching: Bool = false
+    var searchUserInput: String = ""
+    var activeSearchQuery: String = ""
+    var searchResults: Movies = []
+    var error: Error? = nil
 }
 
 struct ISDDashboardState {
     var movies: Movies = []
     var recentlyViewedMovies: Movies = []
-    var searchQuery: String = ""
 }
 
 struct ISDMovieDetailState {

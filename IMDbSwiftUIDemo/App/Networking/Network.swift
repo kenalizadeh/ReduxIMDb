@@ -79,7 +79,7 @@ class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDT
     @Published
     var isLoading: Bool = false
 
-    func makePublisher(with params: RequestDTO?) -> AnyPublisher<ResponseDTO, Error> {
+    func makePublisher(with params: RequestDTO? = nil) -> AnyPublisher<ResponseDTO, Error> {
         URLSession
             .shared
             .dataTaskPublisher(for: makeRequest(with: params))
@@ -177,6 +177,7 @@ class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDT
 
     func cancel() {
         _cancellable?.cancel()
+        isLoading = false
     }
 
     func processData(_ data: ResponseDTO) {}

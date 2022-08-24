@@ -74,5 +74,11 @@ extension MovieDetail {
             self.title = dto.title
             self.image = dto.image
         }
+
+        init(from movie: Movie) {
+            self.id = movie.id
+            self.title = movie.title
+            self.image = movie.imageURL
+        }
     }
 }
