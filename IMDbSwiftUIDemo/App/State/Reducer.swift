@@ -41,6 +41,8 @@ let isdReducer: Reducer<ISDAppState, ISDAction> = { state, action in
             state.search.isSearching = true
 
         case .searchResultsLoaded(let movies):
+            guard !state.search.searchUserInput.isEmpty else { break }
+
             state.search.error = nil
             state.search.searchResults = movies
             state.search.isSearching = false
