@@ -11,6 +11,7 @@ import Combine
 struct ISDAppState {
     var dashboard: ISDDashboardState = .init()
     var movieDetail: ISDMovieDetailState = .init()
+    var movieReviews: ISDMovieReviewState = .init()
     var search: ISDSearchState = .init()
 }
 
@@ -28,8 +29,16 @@ struct ISDDashboardState {
 }
 
 struct ISDMovieDetailState {
-    var movieID: MovieID?
-    var movie: MovieDetail?
+    var movieID: MovieID? = nil
+    var movie: MovieDetail? = nil
+    var isLoading: Bool = false
+    var error: Error? = nil
+}
+
+struct ISDMovieReviewState {
+    var movieID: MovieID? = nil
+    var reviews: MovieReviews = []
+    var expandedMovieReviewID: MovieReviewID? = nil
     var isLoading: Bool = false
     var error: Error? = nil
 }

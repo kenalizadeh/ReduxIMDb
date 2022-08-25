@@ -24,19 +24,11 @@ struct NetworkConstants {
 
 enum HTTPHeader {
     case custom(Parameters)
-    case authorization
-    case refresh
 
     var parameters: Parameters {
         switch self {
         case .custom(let parameters):
             return parameters
-
-        case .authorization:
-            return ["Authorization": "Bearer \(Storage.shared.accessToken ?? "")"]
-
-        case .refresh:
-            return ["Authorization": "Bearer \(Storage.shared.refreshToken ?? "")"]
         }
     }
 }

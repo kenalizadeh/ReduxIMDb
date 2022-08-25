@@ -33,7 +33,7 @@ struct DashboardView: View {
                     }.padding(.horizontal, 10)
 
                     ForEach(movies) { movie in
-                        NavigationLink(value: Route.movieDetail(movie.id)) {
+                        NavigationLink(value: Route.movieDetail(movie)) {
                             HStack {
                                 Text(movie.fullTitle)
                                     .foregroundColor(Color.black)
@@ -68,7 +68,7 @@ struct DashboardView: View {
                         ScrollView(.horizontal) {
                             LazyHStack {
                                 ForEach(recentlyViewedMovies) { movie in
-                                    NavigationLink(value: Route.movieDetail(movie.id)) {
+                                    NavigationLink(value: Route.movieDetail(movie)) {
                                         HorizontalMovieCell(movie: movie)
                                             .frame(width: proxy.size.height / 6, height: proxy.size.height / 3)
                                             .clipShape(RoundedRectangle(cornerRadius: 4))

@@ -9,8 +9,8 @@ import Foundation
 
 enum Route {
     case mainView
-    case movieDetail(MovieID)
-    case movieReviews(MovieID)
+    case movieDetail(Movie)
+    case movieReviews(Movie)
 }
 
 extension Route: Hashable {

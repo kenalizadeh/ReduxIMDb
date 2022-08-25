@@ -20,13 +20,15 @@ struct AppContainerView: View {
                         DashboardView()
                             .environmentObject(store)
 
-                    case .movieDetail(let movieID):
-                        MovieDetailView(movieID: movieID)
+                    case .movieDetail(let movie):
+                        MovieDetailView(movieID: movie.id)
                             .environmentObject(store)
+                            .navigationTitle(movie.title)
 
-                    case .movieReviews(let movieID):
-                        MovieReviewsView(movieID: movieID)
+                    case .movieReviews(let movie):
+                        MovieReviewsView(movieID: movie.id)
                             .environmentObject(store)
+                            .navigationTitle(movie.title)
                     }
                 }
         }

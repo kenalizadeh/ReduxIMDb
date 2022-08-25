@@ -15,7 +15,7 @@ struct MovieDetailView: View {
     var body: some View {
         GeometryReader { proxy in
             VStack {
-                if let movie = store.state.movieDetail.movie {
+                if let movie = store.state.movieDetail.movie, let movieID = store.state.movieDetail.movieID, movie.id == movieID {
                     VStack {
                         AsyncImage(url: URL(string: movie.image.resized(.large))) { image in
                             image
@@ -43,10 +43,7 @@ struct MovieDetailView: View {
                         .padding(.horizontal, 10)
                     }
                     .navigationBarTitleDisplayMode(NavigationBarItem.TitleDisplayMode.inline)
-                    .navigationTitle(movie.title)
-                    .onDisappear {
-                        store.dispatch(ISDAction.movieDetail(.clear))
-                    }
+                    //.navigationTitle(movie.title)
 
                     if !movie.similarMovies.isEmpty {
                         Divider()
@@ -64,7 +61,7 @@ struct MovieDetailView: View {
                         ScrollView(.horizontal) {
                             LazyHStack {
                                 ForEach(movie.similarMovies) { movie in
-                                    NavigationLink(value: Route.movieDetail(movie.id)) {
+                                    NavigationLink(value: Route.movieDetail(movie)) {
                                         HorizontalMovieCell(movie: movie)
                                             .frame(width: proxy.size.height / 6, height: proxy.size.height / 3)
                                             .clipShape(RoundedRectangle(cornerRadius: 4))
@@ -79,7 +76,7 @@ struct MovieDetailView: View {
                     }
                 } else if let error = store.state.movieDetail.error {
                     Button {
-                        store.dispatch(.movieDetail(.fetchData(self.movieID)))
+                        store.dispatch(.movieDetail(.clear))
                     } label: {
                         Text(error.localizedDescription)
                     }
@@ -93,11 +90,11 @@ struct MovieDetailView: View {
                     }
                 } else {
                     Color.clear
-                        .onAppear {
-                            store.dispatch(.movieDetail(.fetchData(self.movieID)))
-                        }
                 }
             }
+        }
+        .onAppear {
+            store.dispatch(.movieDetail(.viewLoaded(self.movieID)))
         }
     }
 }

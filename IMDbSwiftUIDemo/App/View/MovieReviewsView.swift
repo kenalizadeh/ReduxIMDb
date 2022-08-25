@@ -10,66 +10,64 @@ import SwiftUI
 struct MovieReviewsView: View {
     @EnvironmentObject var store: ISDStore
 
-    @StateObject
-    var viewModel: MovieReviewsViewModel
-
     let movieID: String
-
-    init(movieID: String) {
-        self.movieID = movieID
-        self._viewModel = StateObject(wrappedValue: MovieReviewsViewModel(movieID: movieID))
-    }
 
     var body: some View {
         ScrollView {
             LazyVStack {
-                if viewModel.isLoading {
+                if !store.state.movieReviews.reviews.isEmpty, let movieID = store.state.movieReviews.movieID, self.movieID == movieID {
+                    ForEach(store.state.movieReviews.reviews) { review in
+                        VStack {
+                            HStack {
+                                Text(review.title)
+                                    .font(.title3)
+                                    .lineLimit(2)
+
+                                Spacer()
+                            }
+                            .padding(.bottom, 10)
+
+                            if review.id == store.state.movieReviews.expandedMovieReviewID {
+                                Text(review.content)
+                                    .font(.footnote)
+                                    .lineLimit(nil)
+                                    .multilineTextAlignment(.leading)
+                            } else {
+                                Text(review.content)
+                                    .font(.footnote)
+                                    .lineLimit(1)
+                            }
+                        }
+                        .padding(10)
+                        .background(Color.gray.opacity(0.1))
+                        .animation(Animation.easeInOut, value: store.state.movieReviews.expandedMovieReviewID)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .padding(10)
+                        .simultaneousTapGesture {
+                            store.dispatch(.movieReview(.tappedReview(review.id)))
+                        }
+                    }
+                } else if let error = store.state.movieReviews.error {
+                    Button {
+                        store.dispatch(.movieReview(.clear))
+                    } label: {
+                        Text(error.localizedDescription)
+                    }
+                } else if store.state.movieDetail.isLoading {
                     HStack {
                         Spacer()
 
-                        ProgressView("Searching...")
+                        ProgressView("Loading...")
 
                         Spacer()
                     }
-                }
-
-                ForEach(viewModel.reviews) { review in
-                    VStack {
-                        HStack {
-                            Text(review.title)
-                                .font(.title3)
-                                .lineLimit(2)
-
-                            Spacer()
-                        }
-                        .padding(.bottom, 10)
-
-                        if review.id == viewModel.expandedReviewID {
-                            Text(review.content)
-                                .font(.footnote)
-                                .lineLimit(nil)
-                                .multilineTextAlignment(.leading)
-                        } else {
-                            Text(review.content)
-                                .font(.footnote)
-                                .lineLimit(1)
-                        }
-                    }
-                    .padding(10)
-                    .background(Color.gray.opacity(0.1))
-                    .animation(Animation.easeInOut, value: viewModel.expandedReviewID)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .padding(10)
-                    .simultaneousTapGesture {
-                        viewModel.expandedReviewID = viewModel.expandedReviewID == review.id ? "" : review.id
-                    }
+                } else {
+                    Text("Reviews unavailable for movie")
                 }
             }
         }
         .onAppear {
-            viewModel
-                .networkService
-                .send()
+            store.dispatch(.movieReview(.viewLoaded(self.movieID)))
         }
     }
 }
