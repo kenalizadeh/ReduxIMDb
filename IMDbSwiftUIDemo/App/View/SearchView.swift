@@ -11,11 +11,17 @@ import Combine
 struct SearchView: View {
     @EnvironmentObject var store: ISDStore
 
+    // A property wrapper type that can read and write a value owned by a source of truth.
+    // Ref: https://developer.apple.com/documentation/swiftui/binding
+    // -------------------------
+    // @Binding lets us declare that one value actually comes from elsewhere, and should be shared in both places. This is not the same as @ObservedObject or @EnvironmentObject, both of which are designed for reference types to be shared across potentially many views.
+    // Use the plain variable name to access the 'wrapped value' of the binding variable, which would be same as '_searchText.wrappedValue', which is String.
+    // Use `$` prefixed variable name to access the 'projected value' of the binding variable, which would be same as '_searchText.projectedValue', which is Binding<String>.
+    // ProjectedValues can depend on the implementation: For example: the projected value of the 'searchTextSubject' variable declared below is Binding<PassthroughSubject<String, Never>>, but in the case of Binding variables, it points to self.
+    // Use the '_' prefixed variableName to access the variable itself, which is of type Binding<String>.
     @Binding
     var searchText: String
 
-    // SwiftUI uses @State to allow you to modify values inside a struct, which would normally not be allowed because structs are value types.
-    // SwiftUI’s @StateObject property wrapper is designed to fill a very specific gap in state management: when you need to create a reference type inside one of your views and make sure it stays alive for use in that view and others you share it with.
     @State
     var searchTextSubject: PassthroughSubject<String, Never> = .init()
 

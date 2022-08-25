@@ -30,7 +30,6 @@ struct MovieDetailView: View {
                         HStack {
                             NavigationLink {
                                 MovieReviewsView(movieID: movie.id)
-                                    .environmentObject(store)
                             } label: {
                                 Text("See Reviews")
                                     .foregroundColor(.white)

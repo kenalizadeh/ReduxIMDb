@@ -10,7 +10,6 @@ import Foundation
 typealias Reducer<State, Action> = (State, Action) -> State
 
 let isdReducer: Reducer<ISDAppState, ISDAction> = { state, action in
-    defer { print(":LOG:", String(String(describing: action).prefix(100))) }
     var state = state
 
     switch action {
