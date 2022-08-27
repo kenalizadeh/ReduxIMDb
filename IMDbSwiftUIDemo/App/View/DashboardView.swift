@@ -38,22 +38,7 @@ struct DashboardView: View {
 
                     ForEach(movies) { movie in
                         NavigationLink(value: Route.movieDetail(movie)) {
-                            HStack {
-                                Text(movie.fullTitle)
-                                    .foregroundColor(Color.black)
-
-                                Spacer()
-
-                                AsyncImage(url: URL(string: movie.imageURL.resized(.small))) { image in
-                                    image.resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(height: 60)
-                                } placeholder: {
-                                    ProgressView()
-                                }
-                            }
-                            .padding(10)
-                            .frame(height: 60)
+                            MovieCell(movie: movie)
                         }
                     }
 
@@ -102,7 +87,6 @@ struct ContentView_Previews: PreviewProvider {
                     initial: ISDAppState(),
                     reducer: isdReducer,
                     middlewares: [
-                        searchMiddleware,
                         recentlyViewedMoviesThunk
                     ]
                 )

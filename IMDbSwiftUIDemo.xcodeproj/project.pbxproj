@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		C717A85828AD7D690099B952 /* Movie.swift in Sources */ = {isa = PBXBuildFile; fileRef = C717A85728AD7D690099B952 /* Movie.swift */; };
+		C7218CAD28BA72D400D2B5BE /* MovieCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7218CAC28BA72D400D2B5BE /* MovieCell.swift */; };
 		C737814428B6170B00C8BA30 /* HorizontalMovieCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C737814328B6170B00C8BA30 /* HorizontalMovieCell.swift */; };
 		C738148528B3935B001DF048 /* MovieDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = C738148428B3935B001DF048 /* MovieDetail.swift */; };
 		C73B58AD28B0CC0E00B96743 /* SearchResponseDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73B58AC28B0CC0E00B96743 /* SearchResponseDTO.swift */; };
@@ -60,6 +61,7 @@
 
 /* Begin PBXFileReference section */
 		C717A85728AD7D690099B952 /* Movie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Movie.swift; sourceTree = "<group>"; };
+		C7218CAC28BA72D400D2B5BE /* MovieCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieCell.swift; sourceTree = "<group>"; };
 		C737814328B6170B00C8BA30 /* HorizontalMovieCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalMovieCell.swift; sourceTree = "<group>"; };
 		C738148428B3935B001DF048 /* MovieDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetail.swift; sourceTree = "<group>"; };
 		C73B58AC28B0CC0E00B96743 /* SearchResponseDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResponseDTO.swift; sourceTree = "<group>"; };
@@ -271,6 +273,7 @@
 				C7BED6F228B0059C00C0A841 /* MovieDetailView.swift */,
 				C737814328B6170B00C8BA30 /* HorizontalMovieCell.swift */,
 				C767C19C28B2BD4300D2502B /* MovieReviewsView.swift */,
+				C7218CAC28BA72D400D2B5BE /* MovieCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -426,6 +429,7 @@
 				C767C19D28B2BD4300D2502B /* MovieReviewsView.swift in Sources */,
 				C78E5FFB28A93CC40083B373 /* SearchView.swift in Sources */,
 				C78E5FF828A916850083B373 /* Action.swift in Sources */,
+				C7218CAD28BA72D400D2B5BE /* MovieCell.swift in Sources */,
 				C78E5FF428A916850083B373 /* Reducer.swift in Sources */,
 				C75F785828A96327005895A6 /* DTO.swift in Sources */,
 				C73B58AD28B0CC0E00B96743 /* SearchResponseDTO.swift in Sources */,

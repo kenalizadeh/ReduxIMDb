@@ -29,12 +29,10 @@ let mostPopularMoviesThunk: Middleware<ISDAppState, ISDAction> = { state, action
 }
 
 let recentlyViewedMoviesThunk: Middleware<ISDAppState, ISDAction> = { _, action in
-    if case let .movieDetail(.movieDetailLoaded(movieDetail)) = action {
-        return Just(ISDAction.mainScreen(.markMovieViewed(Movie.init(from: movieDetail))))
-            .eraseToAnyPublisher()
-    }
+    guard case let .movieDetail(.movieDetailLoaded(movieDetail)) = action else { return Empty().eraseToAnyPublisher() }
 
-    return Empty().eraseToAnyPublisher()
+    return Just(ISDAction.mainScreen(.markMovieViewed(Movie.init(from: movieDetail))))
+        .eraseToAnyPublisher()
 }
 
 let searchMoviesThunk: Middleware<ISDAppState, ISDAction> = { _, action in

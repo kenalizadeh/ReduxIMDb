@@ -29,6 +29,7 @@ struct HorizontalMovieCell: View {
                     .foregroundColor(.white)
                     .lineLimit(1)
             }
+            .shadow(radius: 4)
             .frame(height: 30)
         }
     }

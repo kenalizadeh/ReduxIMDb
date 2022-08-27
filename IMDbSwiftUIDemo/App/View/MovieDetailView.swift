@@ -106,7 +106,6 @@ struct MovieDetailView_Previews: PreviewProvider {
                     initial: ISDAppState(),
                     reducer: isdReducer,
                     middlewares: [
-                        searchMiddleware,
                         recentlyViewedMoviesThunk
                     ]
                 )
