@@ -87,10 +87,12 @@ class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDT
                 self.processData(decoded)
                 return decoded
             }
+            #if DEBUG
             .mapError {
                 print(":LOG: NetworkError:", $0)
                 return $0
             }
+            #endif
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }

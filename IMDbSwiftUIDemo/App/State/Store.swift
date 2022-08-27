@@ -37,7 +37,7 @@ class Store<State, Action>: ObservableObject {
     }
 
     private func dispatch(_ currentState: State, _ action: Action) {
-        // Middlewares intercept and replace the state with a modified one if necessary before the action and state is passed to the reducer.
+        // Middlewares are action pre-processors acting before the root reducer.
         let newState = middlewares.reduce(currentState) { partialResult, middleware in
             middleware(partialResult, action)
         }
@@ -48,7 +48,7 @@ class Store<State, Action>: ObservableObject {
         // It does not change the existing state. It only produces a new State value.
         let finalState = reducer(newState, action)
 
-        // Thunks are useful for producing side effects, which neither reducer nor middlewares can or should do.
+        // Thunks are useful for producing side effects, which reducer/middlewares can/should do.
         // Thunks handled after the action passes throught the reducer.
         thunks.forEach { thunk in
             thunk(finalState, action)

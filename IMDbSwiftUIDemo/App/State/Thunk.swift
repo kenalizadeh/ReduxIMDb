@@ -73,3 +73,25 @@ let movieReviewsThunk: Thunk<ISDAppState, ISDAction> = { _, action in
         .catch({ Just(ISDAction.movieReview(.showError($0))) })
         .eraseToAnyPublisher()
 }
+
+let loggerThunk: Thunk<ISDAppState, ISDAction> = { _, action in
+    let actionLog: String = String(String(describing: action).prefix(100))
+
+    debugPrint(":LOG:", actionLog)
+
+    return Empty().eraseToAnyPublisher()
+}
+
+// MARK: - Mock Thunks
+
+let mockMovieDetailThunk: Thunk<ISDAppState, ISDAction> = { state, action in
+    guard case let .movieDetail(.viewLoaded(movieID)) = action else { return Empty().eraseToAnyPublisher() }
+
+    guard let movie = state.dashboard.movies.randomElement() else { return Empty().eraseToAnyPublisher() }
+
+    let mockMovie = MovieDetail(id: movie.id, title: movie.title, originalTitle: movie.fullTitle, fullTitle: movie.fullTitle, year: "", image: movie.imageURL, releaseDate: "", runtimeStr: "", plotLocal: "", directors: [], writers: [], stars: "", actors: [], genres: "", similarMovies: [], imageURLs: [])
+
+    return Just(ISDAction.movieDetail(.movieDetailLoaded(mockMovie)))
+        .delay(for: 1.4, scheduler: DispatchQueue.main)
+        .eraseToAnyPublisher()
+}
