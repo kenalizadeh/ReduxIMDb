@@ -10,7 +10,7 @@ import Combine
 
 typealias Thunk<State, Action> = (State, Action) -> AnyPublisher<Action, Never>
 
-let mostPopularMoviesThunk: Thunk<ISDAppState, ISDAction> = { state, action in
+let mostPopularMoviesThunk: Middleware<ISDAppState, ISDAction> = { state, action in
     guard case .launch = action else { return Empty().eraseToAnyPublisher() }
 
     let networkService = PopularMoviesNetworkService()
@@ -28,7 +28,7 @@ let mostPopularMoviesThunk: Thunk<ISDAppState, ISDAction> = { state, action in
         .eraseToAnyPublisher()
 }
 
-let recentlyViewedMoviesThunk: Thunk<ISDAppState, ISDAction> = { _, action in
+let recentlyViewedMoviesThunk: Middleware<ISDAppState, ISDAction> = { _, action in
     if case let .movieDetail(.movieDetailLoaded(movieDetail)) = action {
         return Just(ISDAction.mainScreen(.markMovieViewed(Movie.init(from: movieDetail))))
             .eraseToAnyPublisher()
@@ -37,7 +37,7 @@ let recentlyViewedMoviesThunk: Thunk<ISDAppState, ISDAction> = { _, action in
     return Empty().eraseToAnyPublisher()
 }
 
-let searchMoviesThunk: Thunk<ISDAppState, ISDAction> = { _, action in
+let searchMoviesThunk: Middleware<ISDAppState, ISDAction> = { _, action in
     guard case let .search(.search(query)) = action else { return Empty().eraseToAnyPublisher() }
 
     return SearchNetworkService(searchQuery: query)
@@ -49,7 +49,7 @@ let searchMoviesThunk: Thunk<ISDAppState, ISDAction> = { _, action in
         .eraseToAnyPublisher()
 }
 
-let movieDetailThunk: Thunk<ISDAppState, ISDAction> = { _, action in
+let movieDetailThunk: Middleware<ISDAppState, ISDAction> = { _, action in
     guard case let .movieDetail(.viewLoaded(movieID)) = action else { return Empty().eraseToAnyPublisher() }
 
     return MovieDetailNetworkService(movieID: movieID)
@@ -61,7 +61,7 @@ let movieDetailThunk: Thunk<ISDAppState, ISDAction> = { _, action in
         .eraseToAnyPublisher()
 }
 
-let movieReviewsThunk: Thunk<ISDAppState, ISDAction> = { _, action in
+let movieReviewsThunk: Middleware<ISDAppState, ISDAction> = { _, action in
     guard case let .movieReview(.viewLoaded(movieID)) = action else { return Empty().eraseToAnyPublisher() }
 
     return MovieReviewsNetworkService(movieID: movieID)
@@ -74,17 +74,9 @@ let movieReviewsThunk: Thunk<ISDAppState, ISDAction> = { _, action in
         .eraseToAnyPublisher()
 }
 
-let loggerThunk: Thunk<ISDAppState, ISDAction> = { _, action in
-    let actionLog: String = String(String(describing: action).prefix(100))
-
-    debugPrint(":LOG:", actionLog)
-
-    return Empty().eraseToAnyPublisher()
-}
-
 // MARK: - Mock Thunks
 
-let mockMovieDetailThunk: Thunk<ISDAppState, ISDAction> = { state, action in
+let mockMovieDetailThunk: Middleware<ISDAppState, ISDAction> = { state, action in
     guard case let .movieDetail(.viewLoaded(movieID)) = action else { return Empty().eraseToAnyPublisher() }
 
     guard let movie = state.dashboard.movies.randomElement() else { return Empty().eraseToAnyPublisher() }

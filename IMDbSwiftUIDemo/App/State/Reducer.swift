@@ -22,7 +22,10 @@ let isdReducer: Reducer<ISDAppState, ISDAction> = { state, action in
             state.dashboard.movies = movies
 
         case .markMovieViewed(let movie):
-            guard !state.dashboard.recentlyViewedMovies.contains(movie) else { break }
+            // Remove the movie from recentlyViewedMovies list to avoid duplication.
+            if let index = state.dashboard.recentlyViewedMovies.firstIndex(of: movie) {
+                state.dashboard.recentlyViewedMovies.remove(at: index)
+            }
 
             state.dashboard.recentlyViewedMovies.append(movie)
         }

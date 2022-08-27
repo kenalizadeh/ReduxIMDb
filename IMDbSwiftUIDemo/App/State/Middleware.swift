@@ -5,33 +5,15 @@
 //  Created by Kenan Alizadeh on 14.08.22.
 //
 
+import Foundation
 import Combine
 
-typealias Middleware<State, Action> = (State, Action) -> State
+typealias Middleware<State, Action> = (State, Action) -> AnyPublisher<Action, Never>
 
-let recentlyViewedMoviesMiddleware: Middleware<ISDAppState, ISDAction> = { state, action in
-    guard
-        case let .mainScreen(.markMovieViewed(movie)) = action,
-        let index = state.dashboard.recentlyViewedMovies.firstIndex(of: movie),
-        index != state.dashboard.recentlyViewedMovies.count - 1
-    else { return state }
+let loggerMiddleware: Middleware<ISDAppState, ISDAction> = { _, action in
+    let actionLog: String = String(String(describing: action).prefix(100))
 
-    var state = state
+    debugPrint(":LOGGER:", Date(), actionLog)
 
-    state.dashboard.recentlyViewedMovies.remove(at: index)
-
-    return state
-}
-
-let searchMiddleware: Middleware<ISDAppState, ISDAction> = { state, action in
-    guard
-        case let .search(.search(text)) = action,
-        state.search.searchUserInput.isEmpty
-    else { return state }
-
-    var state = state
-
-    state.search.activeSearchQuery = ""
-
-    return state
+    return Empty().eraseToAnyPublisher()
 }
