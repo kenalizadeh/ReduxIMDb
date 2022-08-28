@@ -174,7 +174,6 @@
 				C78E5FEB28A916850083B373 /* Model */,
 				C78E5FEC28A916850083B373 /* State */,
 				C78E5FF228A916850083B373 /* View */,
-				C7E8736828B1248E0029D611 /* ViewModel */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -276,13 +275,6 @@
 				C7218CAC28BA72D400D2B5BE /* MovieCell.swift */,
 			);
 			path = View;
-			sourceTree = "<group>";
-		};
-		C7E8736828B1248E0029D611 /* ViewModel */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = ViewModel;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

@@ -15,7 +15,7 @@ struct MovieReviewsView: View {
     var body: some View {
         ScrollView {
             LazyVStack {
-                if !store.state.movieReviews.reviews.isEmpty, let movieID = store.state.movieReviews.movieID, self.movieID == movieID {
+                if !store.state.movieReviews.reviews.isEmpty {
                     ForEach(store.state.movieReviews.reviews) { review in
                         VStack {
                             HStack {

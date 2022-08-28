@@ -13,7 +13,7 @@ struct IMDbSwiftUIDemoApp: App {
     @StateObject
     var store = ISDStore(
         initial: ISDAppState(),
-        reducer: isdReducer,
+        reducer: rootReducer,
         middlewares: [
             loggerMiddleware,
             // Thunks

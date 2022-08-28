@@ -85,7 +85,7 @@ struct ContentView_Previews: PreviewProvider {
             .environmentObject(
                 ISDStore(
                     initial: ISDAppState(),
-                    reducer: isdReducer,
+                    reducer: rootReducer,
                     middlewares: [
                         recentlyViewedMoviesThunk
                     ]

@@ -15,7 +15,7 @@ struct MovieDetailView: View {
     var body: some View {
         GeometryReader { proxy in
             VStack {
-                if let movie = store.state.movieDetail.movie, let movieID = store.state.movieDetail.movieID, movie.id == movieID {
+                if let movie = store.state.movieDetail.movie {
                     VStack {
                         AsyncImage(url: URL(string: movie.image.resized(.large))) { image in
                             image
@@ -104,7 +104,7 @@ struct MovieDetailView_Previews: PreviewProvider {
             .environmentObject(
                 ISDStore(
                     initial: ISDAppState(),
-                    reducer: isdReducer,
+                    reducer: rootReducer,
                     middlewares: [
                         recentlyViewedMoviesThunk
                     ]

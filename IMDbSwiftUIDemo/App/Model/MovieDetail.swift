@@ -48,7 +48,7 @@ extension MovieDetail {
 }
 
 extension MovieDetail {
-    struct Actor: Identifiable, Hashable {
+    struct Actor: Identifiable {
         let id: String
         let name: String
         let character: String

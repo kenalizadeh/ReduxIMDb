@@ -9,14 +9,14 @@ import Foundation
 
 typealias Reducer<State, Action> = (State, Action) -> State
 
-let isdReducer: Reducer<ISDAppState, ISDAction> = { state, action in
+let rootReducer: Reducer<ISDAppState, ISDAction> = { state, action in
     var state = state
 
     switch action {
     case .launch:
         break
 
-    case .mainScreen(let action):
+    case .dashboard(let action):
         switch action {
         case .moviesLoaded(let movies):
             state.dashboard.movies = movies

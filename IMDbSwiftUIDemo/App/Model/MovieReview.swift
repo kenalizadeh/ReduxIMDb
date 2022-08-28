@@ -37,10 +37,4 @@ extension MovieReview: Identifiable {
     var id: String { reviewLink }
 }
 
-extension MovieReview: Equatable, Hashable {
-    static func == (lhs: MovieReview, rhs: MovieReview) -> Bool {
-        lhs.id == rhs.id
-    }
-}
-
 typealias MovieReviews = [MovieReview]

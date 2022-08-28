@@ -8,8 +8,6 @@
 import Foundation
 import Combine
 
-typealias Thunk<State, Action> = (State, Action) -> AnyPublisher<Action, Never>
-
 let mostPopularMoviesThunk: Middleware<ISDAppState, ISDAction> = { state, action in
     guard case .launch = action else { return Empty().eraseToAnyPublisher() }
 
@@ -24,14 +22,14 @@ let mostPopularMoviesThunk: Middleware<ISDAppState, ISDAction> = { state, action
         .compactMap { $0 }
         .map(\.items)
         .map { $0.map(Movie.init(from:)) }
-        .map { ISDAction.mainScreen(.moviesLoaded($0)) }
+        .map { ISDAction.dashboard(.moviesLoaded($0)) }
         .eraseToAnyPublisher()
 }
 
 let recentlyViewedMoviesThunk: Middleware<ISDAppState, ISDAction> = { _, action in
     guard case let .movieDetail(.movieDetailLoaded(movieDetail)) = action else { return Empty().eraseToAnyPublisher() }
 
-    return Just(ISDAction.mainScreen(.markMovieViewed(Movie.init(from: movieDetail))))
+    return Just(ISDAction.dashboard(.markMovieViewed(Movie.init(from: movieDetail))))
         .eraseToAnyPublisher()
 }
 
@@ -56,6 +54,7 @@ let movieDetailThunk: Middleware<ISDAppState, ISDAction> = { _, action in
         .map(MovieDetail.init(from:))
         .map({ ISDAction.movieDetail(.movieDetailLoaded($0)) })
         .catch({ Just(ISDAction.movieDetail(.showError($0))) })
+        .prepend(Just(ISDAction.movieDetail(.clear)))
         .eraseToAnyPublisher()
 }
 
@@ -69,6 +68,7 @@ let movieReviewsThunk: Middleware<ISDAppState, ISDAction> = { _, action in
         .map { $0.map(MovieReview.init(from:)) }
         .map({ ISDAction.movieReview(.movieReviewsLoaded($0)) })
         .catch({ Just(ISDAction.movieReview(.showError($0))) })
+        .prepend(Just(ISDAction.movieReview(.clear)))
         .eraseToAnyPublisher()
 }
 

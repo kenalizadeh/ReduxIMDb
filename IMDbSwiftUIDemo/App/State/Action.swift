@@ -13,13 +13,14 @@ typealias MovieReviewID = String
 
 enum ISDAction {
     case launch
-    case mainScreen(ISDMainScreenAction)
+    case dashboard(ISDDashboardAction)
     case search(ISDSearchAction)
     case movieDetail(ISDMovieDetailAction)
     case movieReview(ISDMovieReviewAction)
+    case empty
 }
 
-enum ISDMainScreenAction {
+enum ISDDashboardAction {
     case moviesLoaded(Movies)
     case markMovieViewed(Movie)
 }
