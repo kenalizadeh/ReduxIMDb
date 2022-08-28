@@ -17,7 +17,6 @@ enum ISDAction {
     case search(ISDSearchAction)
     case movieDetail(ISDMovieDetailAction)
     case movieReview(ISDMovieReviewAction)
-    case empty
 }
 
 enum ISDDashboardAction {
