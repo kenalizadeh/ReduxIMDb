@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 let mostPopularMoviesThunk: Middleware<ISDAppState, ISDAction> = { state, action in
-    guard case .launch = action else { return Empty().eraseToAnyPublisher() }
+    guard case .launch = action else { return Just(action).eraseToAnyPublisher() }
 
     let networkService = PopularMoviesNetworkService()
 
@@ -22,66 +22,69 @@ let mostPopularMoviesThunk: Middleware<ISDAppState, ISDAction> = { state, action
         .compactMap { $0 }
         .map(\.items)
         .map { $0.map(Movie.init(from:)) }
-        .map { ISDAction.dashboard(.moviesLoaded($0)) }
+        .map { .dashboard(.moviesLoaded($0)) }
+        .prepend(action)
         .eraseToAnyPublisher()
 }
 
 let recentlyViewedMoviesThunk: Middleware<ISDAppState, ISDAction> = { _, action in
-    guard case let .movieDetail(.movieDetailLoaded(movieDetail)) = action else { return Empty().eraseToAnyPublisher() }
+    guard case let .movieDetail(.movieDetailLoaded(movieDetail)) = action else { return Just(action).eraseToAnyPublisher() }
 
-    return Just(ISDAction.dashboard(.markMovieViewed(Movie.init(from: movieDetail))))
+    return Just(.dashboard(.markMovieViewed(Movie.init(from: movieDetail))))
+        .prepend(action)
         .eraseToAnyPublisher()
 }
 
 let searchMoviesThunk: Middleware<ISDAppState, ISDAction> = { _, action in
-    guard case let .search(.search(query)) = action else { return Empty().eraseToAnyPublisher() }
+    guard case let .search(.search(query)) = action else { return Just(action).eraseToAnyPublisher() }
 
     return SearchNetworkService(searchQuery: query)
         .makePublisher()
         .map(\.results)
         .map { $0.map(Movie.init(from:)) }
-        .map({ ISDAction.search(.searchResultsLoaded($0)) })
-        .catch({ Just(ISDAction.search(.showError($0))) })
+        .map({ .search(.searchResultsLoaded($0)) })
+        .catch({ Just(.search(.showError($0))) })
+        .prepend(action)
         .eraseToAnyPublisher()
 }
 
 let movieDetailThunk: Middleware<ISDAppState, ISDAction> = { _, action in
-    guard case let .movieDetail(.viewLoaded(movieID)) = action else { return Empty().eraseToAnyPublisher() }
+    guard case let .movieDetail(.viewLoaded(movieID)) = action else { return Just(action).eraseToAnyPublisher() }
 
     return MovieDetailNetworkService(movieID: movieID)
         .makePublisher()
         .compactMap { $0 }
         .map(MovieDetail.init(from:))
-        .map({ ISDAction.movieDetail(.movieDetailLoaded($0)) })
-        .catch({ Just(ISDAction.movieDetail(.showError($0))) })
-        .prepend(Just(ISDAction.movieDetail(.clear)))
+        .map({ .movieDetail(.movieDetailLoaded($0)) })
+        .catch({ Just(.movieDetail(.showError($0))) })
+        .prepend([action, .movieDetail(.clear)])
         .eraseToAnyPublisher()
 }
 
 let movieReviewsThunk: Middleware<ISDAppState, ISDAction> = { _, action in
-    guard case let .movieReview(.viewLoaded(movieID)) = action else { return Empty().eraseToAnyPublisher() }
+    guard case let .movieReview(.viewLoaded(movieID)) = action else { return Just(action).eraseToAnyPublisher() }
 
     return MovieReviewsNetworkService(movieID: movieID)
         .makePublisher()
         .compactMap { $0 }
         .map(\.items)
         .map { $0.map(MovieReview.init(from:)) }
-        .map({ ISDAction.movieReview(.movieReviewsLoaded($0)) })
-        .catch({ Just(ISDAction.movieReview(.showError($0))) })
-        .prepend(Just(ISDAction.movieReview(.clear)))
+        .map({ .movieReview(.movieReviewsLoaded($0)) })
+        .catch({ Just(.movieReview(.showError($0))) })
+        .prepend([action, .movieReview(.clear)])
         .eraseToAnyPublisher()
 }
 
 // MARK: - Mock Thunks
 
 let mockMovieDetailThunk: Middleware<ISDAppState, ISDAction> = { state, action in
-    guard case let .movieDetail(.viewLoaded(movieID)) = action else { return Empty().eraseToAnyPublisher() }
+    guard case let .movieDetail(.viewLoaded(movieID)) = action else { return Just(action).eraseToAnyPublisher() }
 
-    guard let movie = state.dashboard.movies.randomElement() else { return Empty().eraseToAnyPublisher() }
+    guard let movie = state.dashboard.movies.randomElement() else { return Just(action).eraseToAnyPublisher() }
 
     let mockMovie = MovieDetail(id: movie.id, title: movie.title, originalTitle: movie.fullTitle, fullTitle: movie.fullTitle, year: "", image: movie.imageURL, releaseDate: "", runtimeStr: "", plotLocal: "", directors: [], writers: [], stars: "", actors: [], genres: "", similarMovies: [], imageURLs: [])
 
-    return Just(ISDAction.movieDetail(.movieDetailLoaded(mockMovie)))
+    return Just(.movieDetail(.movieDetailLoaded(mockMovie)))
         .delay(for: 1.4, scheduler: DispatchQueue.main)
         .eraseToAnyPublisher()
 }

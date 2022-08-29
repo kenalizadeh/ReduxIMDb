@@ -15,5 +15,5 @@ let loggerMiddleware: Middleware<ISDAppState, ISDAction> = { _, action in
 
     debugPrint(":LOGGER:", Date(), actionLog)
 
-    return Empty().eraseToAnyPublisher()
+    return Just(action).eraseToAnyPublisher()
 }

@@ -17,8 +17,8 @@ struct IMDbSwiftUIDemoApp: App {
         middlewares: [
             loggerMiddleware,
             // Thunks
-            recentlyViewedMoviesThunk,
             mostPopularMoviesThunk,
+            recentlyViewedMoviesThunk,
             searchMoviesThunk,
             movieDetailThunk,
             movieReviewsThunk
