@@ -74,17 +74,3 @@ let movieReviewsThunk: Middleware<ISDAppState, ISDAction> = { _, action in
         .prepend([action, .movieReview(.clear)])
         .eraseToAnyPublisher()
 }
-
-// MARK: - Mock Thunks
-
-let mockMovieDetailThunk: Middleware<ISDAppState, ISDAction> = { state, action in
-    guard case let .movieDetail(.viewLoaded(movieID)) = action else { return Just(action).eraseToAnyPublisher() }
-
-    guard let movie = state.dashboard.movies.randomElement() else { return Just(action).eraseToAnyPublisher() }
-
-    let mockMovie = MovieDetail(id: movie.id, title: movie.title, originalTitle: movie.fullTitle, fullTitle: movie.fullTitle, year: "", image: movie.imageURL, releaseDate: "", runtimeStr: "", plotLocal: "", directors: [], writers: [], stars: "", actors: [], genres: "", similarMovies: [], imageURLs: [])
-
-    return Just(.movieDetail(.movieDetailLoaded(mockMovie)))
-        .delay(for: 1.4, scheduler: DispatchQueue.main)
-        .eraseToAnyPublisher()
-}
