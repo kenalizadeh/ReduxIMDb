@@ -11,9 +11,7 @@ import Combine
 typealias Middleware<State, Action> = (State, Action) -> AnyPublisher<Action, Never>
 
 let loggerMiddleware: Middleware<ISDAppState, ISDAction> = { _, action in
-    let actionLog = String(describing: action).prefix(100)
-
-    debugPrint(":LOGGER:", Date(), actionLog)
+    debugPrint(":LOGGER:", Date(), String(describing: action).prefix(100))
 
     return Just(action).eraseToAnyPublisher()
 }
