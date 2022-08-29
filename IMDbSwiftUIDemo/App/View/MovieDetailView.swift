@@ -41,8 +41,8 @@ struct MovieDetailView: View {
                         }
                         .padding(.horizontal, 10)
                     }
-                    .navigationBarTitleDisplayMode(NavigationBarItem.TitleDisplayMode.inline)
-                    //.navigationTitle(movie.title)
+                    .frame(height: proxy.size.height / 2)
+                    .navigationBarTitleDisplayMode(.inline)
 
                     if !movie.similarMovies.isEmpty {
                         Divider()

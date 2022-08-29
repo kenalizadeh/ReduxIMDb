@@ -18,7 +18,7 @@ struct AppContainerView: View {
             DashboardView()
                 .navigationDestination(for: Route.self) { route in
                     switch route {
-                    case .mainView:
+                    case .dashboard:
                         DashboardView()
 
                     case .movieDetail(let movie):

@@ -45,7 +45,7 @@ struct ISDMovieReviewState {
 
 enum ISDScreenState {
     case dashboard(ISDDashboardState)
-    case search(SearchQuery)
+    case search(String)
     case movieDetail
     case showDetail
 }

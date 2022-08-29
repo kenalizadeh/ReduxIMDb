@@ -63,14 +63,14 @@ struct SearchView: View {
         }
         .onReceive(
             searchTextSubject
-                .filter { !$0.trimmingCharacters(in: CharacterSet.whitespaces).isEmpty }
+                .filter { !$0.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty }
                 .debounce(for: 0.275, scheduler: DispatchQueue.main)
         ) { text in
             store.dispatch(.search(.search(text)))
         }
         .onReceive(
             searchTextSubject
-                .filter { $0.trimmingCharacters(in: CharacterSet.whitespaces).isEmpty }
+                .filter { $0.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty }
         ) { text in
             store.dispatch(.search(.cancelSearch))
         }

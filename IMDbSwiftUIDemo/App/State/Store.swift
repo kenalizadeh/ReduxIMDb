@@ -32,11 +32,10 @@ class Store<State, Action>: ObservableObject {
         // Middlewares are action pre-processors acting before the root reducer.
         self._middlewares.reduce(_actionSubject.eraseToAnyPublisher()) { partialResult, middleware in
             partialResult
-                .subscribe(on: self._queue)
                 .flatMap { middleware(self.state, $0) }
                 .eraseToAnyPublisher()
         }
-        .receive(on: DispatchQueue.main)
+        .subscribe(on: _queue)
         .sink(receiveValue: _dispatch)
         .store(in: &_subscriptions)
     }

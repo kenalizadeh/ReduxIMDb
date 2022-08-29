@@ -7,7 +7,6 @@
 
 import Foundation
 
-typealias SearchQuery = String
 typealias MovieID = String
 typealias MovieReviewID = String
 
@@ -25,8 +24,8 @@ enum ISDDashboardAction {
 }
 
 enum ISDSearchAction {
-    case queryUserInput(SearchQuery)
-    case search(SearchQuery)
+    case queryUserInput(String)
+    case search(String)
     case searchResultsLoaded(Movies)
     case cancelSearch
     case showError(Error)

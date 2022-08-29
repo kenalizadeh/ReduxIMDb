@@ -8,7 +8,7 @@
 import Foundation
 
 enum Route {
-    case mainView
+    case dashboard
     case movieDetail(Movie)
     case movieReviews(Movie)
 }

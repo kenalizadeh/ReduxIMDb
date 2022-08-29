@@ -93,7 +93,6 @@ class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDT
                 return $0
             }
             #endif
-            .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
 
@@ -102,6 +101,7 @@ class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDT
         isLoading = true
 
         _cancellable = makePublisher(with: params)
+            .receive(on: DispatchQueue.main)
             .sink { result in
                 self.isLoading = false
 

@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-let mostPopularMoviesThunk: Middleware<ISDAppState, ISDAction> = { state, action in
+let mostPopularMoviesThunk: Middleware<ISDAppState, ISDAction> = { _, action in
     guard case .launch = action else { return Just(action).eraseToAnyPublisher() }
 
     let networkService = PopularMoviesNetworkService()
@@ -43,8 +43,9 @@ let searchMoviesThunk: Middleware<ISDAppState, ISDAction> = { _, action in
         .map(\.results)
         .map { $0.map(Movie.init(from:)) }
         .map({ .search(.searchResultsLoaded($0)) })
-        .catch({ Just(.search(.showError($0))) })
+        .catch({ _ in Empty().eraseToAnyPublisher() })
         .prepend(action)
+        .receive(on: DispatchQueue.main)
         .eraseToAnyPublisher()
 }
 
@@ -58,6 +59,7 @@ let movieDetailThunk: Middleware<ISDAppState, ISDAction> = { _, action in
         .map({ .movieDetail(.movieDetailLoaded($0)) })
         .catch({ Just(.movieDetail(.showError($0))) })
         .prepend([action, .movieDetail(.clear)])
+        .receive(on: DispatchQueue.main)
         .eraseToAnyPublisher()
 }
 
@@ -72,5 +74,6 @@ let movieReviewsThunk: Middleware<ISDAppState, ISDAction> = { _, action in
         .map({ .movieReview(.movieReviewsLoaded($0)) })
         .catch({ Just(.movieReview(.showError($0))) })
         .prepend([action, .movieReview(.clear)])
+        .receive(on: DispatchQueue.main)
         .eraseToAnyPublisher()
 }
