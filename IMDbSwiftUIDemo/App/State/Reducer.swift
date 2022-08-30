@@ -7,12 +7,12 @@
 
 import Foundation
 
-typealias Reducer<State, Action> = (State, Action) -> State
+typealias Reducer<State> = (State, Action) -> State
 
-let rootReducer: Reducer<ISDAppState, ISDAction> = { state, action in
+let rootReducer: Reducer<ISDAppState> = { state, action in
     var state = state
 
-    switch action {
+    switch action as? ISDAction {
     case .launch:
         break
 
@@ -93,6 +93,9 @@ let rootReducer: Reducer<ISDAppState, ISDAction> = { state, action in
             state.movieReviews.error = error
             state.movieReviews.isLoading = false
         }
+
+    case .none:
+        break
     }
 
     return state

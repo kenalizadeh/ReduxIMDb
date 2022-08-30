@@ -8,7 +8,9 @@
 import Foundation
 import Combine
 
-let mostPopularMoviesThunk: Middleware<ISDAppState, ISDAction> = { _, action in
+let mostPopularMoviesThunk: Middleware<ISDAppState> = { _, action in
+    guard let action = action as? ISDAction else { return Just(action).eraseToAnyPublisher() }
+
     guard case .launch = action else { return Just(action).eraseToAnyPublisher() }
 
     let networkService = PopularMoviesNetworkService()
@@ -22,48 +24,56 @@ let mostPopularMoviesThunk: Middleware<ISDAppState, ISDAction> = { _, action in
         .compactMap { $0 }
         .map(\.items)
         .map { $0.map(Movie.init(from:)) }
-        .map { .dashboard(.moviesLoaded($0)) }
+        .map { ISDAction.dashboard(.moviesLoaded($0)) }
         .prepend(action)
         .eraseToAnyPublisher()
 }
 
-let recentlyViewedMoviesThunk: Middleware<ISDAppState, ISDAction> = { _, action in
+let recentlyViewedMoviesThunk: Middleware<ISDAppState> = { _, action in
+    guard let action = action as? ISDAction else { return Just(action).eraseToAnyPublisher() }
+
     guard case let .movieDetail(.movieDetailLoaded(movieDetail)) = action else { return Just(action).eraseToAnyPublisher() }
 
-    return Just(.dashboard(.markMovieViewed(Movie.init(from: movieDetail))))
+    return Just(ISDAction.dashboard(.markMovieViewed(Movie.init(from: movieDetail))))
         .prepend(action)
         .eraseToAnyPublisher()
 }
 
-let searchMoviesThunk: Middleware<ISDAppState, ISDAction> = { _, action in
+let searchMoviesThunk: Middleware<ISDAppState> = { _, action in
+    guard let action = action as? ISDAction else { return Just(action).eraseToAnyPublisher() }
+
     guard case let .search(.search(query)) = action else { return Just(action).eraseToAnyPublisher() }
 
     return SearchNetworkService(searchQuery: query)
         .makePublisher()
         .map(\.results)
         .map { $0.map(Movie.init(from:)) }
-        .map({ .search(.searchResultsLoaded($0)) })
+        .map({ ISDAction.search(.searchResultsLoaded($0)) })
         .catch({ _ in Empty().eraseToAnyPublisher() })
         .prepend(action)
         .receive(on: DispatchQueue.main)
         .eraseToAnyPublisher()
 }
 
-let movieDetailThunk: Middleware<ISDAppState, ISDAction> = { _, action in
+let movieDetailThunk: Middleware<ISDAppState> = { _, action in
+    guard let action = action as? ISDAction else { return Just(action).eraseToAnyPublisher() }
+
     guard case let .movieDetail(.viewLoaded(movieID)) = action else { return Just(action).eraseToAnyPublisher() }
 
     return MovieDetailNetworkService(movieID: movieID)
         .makePublisher()
         .compactMap { $0 }
         .map(MovieDetail.init(from:))
-        .map({ .movieDetail(.movieDetailLoaded($0)) })
-        .catch({ Just(.movieDetail(.showError($0))) })
-        .prepend([action, .movieDetail(.clear)])
+        .map({ ISDAction.movieDetail(.movieDetailLoaded($0)) })
+        .catch({ Just(ISDAction.movieDetail(.showError($0))) })
+        .prepend([action, ISDAction.movieDetail(.clear)])
         .receive(on: DispatchQueue.main)
         .eraseToAnyPublisher()
 }
 
-let movieReviewsThunk: Middleware<ISDAppState, ISDAction> = { _, action in
+let movieReviewsThunk: Middleware<ISDAppState> = { _, action in
+    guard let action = action as? ISDAction else { return Just(action).eraseToAnyPublisher() }
+
     guard case let .movieReview(.viewLoaded(movieID)) = action else { return Just(action).eraseToAnyPublisher() }
 
     return MovieReviewsNetworkService(movieID: movieID)
@@ -71,9 +81,9 @@ let movieReviewsThunk: Middleware<ISDAppState, ISDAction> = { _, action in
         .compactMap { $0 }
         .map(\.items)
         .map { $0.map(MovieReview.init(from:)) }
-        .map({ .movieReview(.movieReviewsLoaded($0)) })
-        .catch({ Just(.movieReview(.showError($0))) })
-        .prepend([action, .movieReview(.clear)])
+        .map({ ISDAction.movieReview(.movieReviewsLoaded($0)) })
+        .catch({ Just(ISDAction.movieReview(.showError($0))) })
+        .prepend([action, ISDAction.movieReview(.clear)])
         .receive(on: DispatchQueue.main)
         .eraseToAnyPublisher()
 }

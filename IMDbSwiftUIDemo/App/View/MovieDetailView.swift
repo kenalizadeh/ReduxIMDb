@@ -75,7 +75,7 @@ struct MovieDetailView: View {
                     }
                 } else if let error = store.state.movieDetail.error {
                     Button {
-                        store.dispatch(.movieDetail(.clear))
+                        store.dispatch(ISDAction.movieDetail(.clear))
                     } label: {
                         Text(error.localizedDescription)
                     }
@@ -93,7 +93,7 @@ struct MovieDetailView: View {
             }
         }
         .onAppear {
-            store.dispatch(.movieDetail(.viewLoaded(self.movieID)))
+            store.dispatch(ISDAction.movieDetail(.viewLoaded(self.movieID)))
         }
     }
 }

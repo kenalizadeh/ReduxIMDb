@@ -8,9 +8,9 @@
 import Foundation
 import Combine
 
-typealias Middleware<State, Action> = (State, Action) -> AnyPublisher<Action, Never>
+typealias Middleware<State> = (State, Action) -> AnyPublisher<Action, Never>
 
-let loggerMiddleware: Middleware<ISDAppState, ISDAction> = { _, action in
+let loggerMiddleware: Middleware<ISDAppState> = { _, action in
     debugPrint(":LOGGER:", Date(), String(describing: action).prefix(100))
 
     return Just(action).eraseToAnyPublisher()

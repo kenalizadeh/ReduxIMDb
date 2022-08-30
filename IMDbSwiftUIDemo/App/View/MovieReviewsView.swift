@@ -38,12 +38,12 @@ struct MovieReviewsView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                         .padding(10)
                         .onTapGesture {
-                            store.dispatch(.movieReview(.tappedReview(review.id)))
+                            store.dispatch(ISDAction.movieReview(.tappedReview(review.id)))
                         }
                     }
                 } else if let error = store.state.movieReviews.error {
                     Button {
-                        store.dispatch(.movieReview(.clear))
+                        store.dispatch(ISDAction.movieReview(.clear))
                     } label: {
                         Text(error.localizedDescription)
                     }
@@ -61,7 +61,7 @@ struct MovieReviewsView: View {
             }
         }
         .onAppear {
-            store.dispatch(.movieReview(.viewLoaded(self.movieID)))
+            store.dispatch(ISDAction.movieReview(.viewLoaded(self.movieID)))
         }
     }
 }

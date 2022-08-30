@@ -32,7 +32,7 @@ struct AppContainerView: View {
                 }
         }
         .onAppear {
-            store.dispatch(.launch)
+            store.dispatch(ISDAction.launch)
         }
     }
 }

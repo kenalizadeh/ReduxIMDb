@@ -59,20 +59,20 @@ struct SearchView: View {
         }
         .onChange(of: searchText) { text in
             searchTextSubject.send(text)
-            store.dispatch(.search(.queryUserInput(text)))
+            store.dispatch(ISDAction.search(.queryUserInput(text)))
         }
         .onReceive(
             searchTextSubject
                 .filter { !$0.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty }
                 .debounce(for: 0.275, scheduler: DispatchQueue.main)
         ) { text in
-            store.dispatch(.search(.search(text)))
+            store.dispatch(ISDAction.search(.search(text)))
         }
         .onReceive(
             searchTextSubject
                 .filter { $0.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty }
         ) { text in
-            store.dispatch(.search(.cancelSearch))
+            store.dispatch(ISDAction.search(.cancelSearch))
         }
     }
 }

@@ -8,13 +8,13 @@
 import Foundation
 import Combine
 
-typealias ISDStore = Store<ISDAppState, ISDAction>
+typealias ISDStore = Store<ISDAppState>
 
-class Store<State, Action>: ObservableObject {
+class Store<State>: ObservableObject {
     @Published
     private(set) var state: State
-    private let _reducer: Reducer<State, Action>
-    private let _middlewares: [Middleware<State, Action>]
+    private let _reducer: Reducer<State>
+    private let _middlewares: [Middleware<State>]
     private let _queue = DispatchQueue(label: "Store.Queue", qos: .userInitiated)
     private var _subscriptions: Set<AnyCancellable> = []
 
@@ -22,8 +22,8 @@ class Store<State, Action>: ObservableObject {
 
     init(
         initial: State,
-        reducer: @escaping Reducer<State, Action>,
-        middlewares: [Middleware<State, Action>] = []
+        reducer: @escaping Reducer<State>,
+        middlewares: [Middleware<State>] = []
     ) {
         self.state = initial
         self._reducer = reducer

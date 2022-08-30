@@ -7,10 +7,12 @@
 
 import Foundation
 
+protocol Action {}
+
 typealias MovieID = String
 typealias MovieReviewID = String
 
-enum ISDAction {
+enum ISDAction: Action {
     case launch
     case dashboard(ISDDashboardAction)
     case search(ISDSearchAction)
@@ -18,12 +20,12 @@ enum ISDAction {
     case movieReview(ISDMovieReviewAction)
 }
 
-enum ISDDashboardAction {
+enum ISDDashboardAction: Action {
     case moviesLoaded(Movies)
     case markMovieViewed(Movie)
 }
 
-enum ISDSearchAction {
+enum ISDSearchAction: Action {
     case queryUserInput(String)
     case search(String)
     case searchResultsLoaded(Movies)
@@ -31,14 +33,14 @@ enum ISDSearchAction {
     case showError(Error)
 }
 
-enum ISDMovieDetailAction {
+enum ISDMovieDetailAction: Action {
     case viewLoaded(MovieID)
     case movieDetailLoaded(MovieDetail)
     case clear
     case showError(Error)
 }
 
-enum ISDMovieReviewAction {
+enum ISDMovieReviewAction: Action {
     case viewLoaded(MovieID)
     case movieReviewsLoaded(MovieReviews)
     case tappedReview(MovieReviewID)
