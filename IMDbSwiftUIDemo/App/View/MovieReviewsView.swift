@@ -27,23 +27,17 @@ struct MovieReviewsView: View {
                             }
                             .padding(.bottom, 10)
 
-                            if review.id == store.state.movieReviews.expandedMovieReviewID {
-                                Text(review.content)
-                                    .font(.footnote)
-                                    .lineLimit(nil)
-                                    .multilineTextAlignment(.leading)
-                            } else {
-                                Text(review.content)
-                                    .font(.footnote)
-                                    .lineLimit(1)
-                            }
+                            Text(review.content)
+                                .font(.footnote)
+                                .lineLimit(review.id == store.state.movieReviews.expandedMovieReviewID ? nil : 1)
+                                .multilineTextAlignment(.leading)
                         }
                         .padding(10)
                         .background(Color.gray.opacity(0.1))
                         .animation(Animation.easeInOut, value: store.state.movieReviews.expandedMovieReviewID)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                         .padding(10)
-                        .simultaneousTapGesture {
+                        .onTapGesture {
                             store.dispatch(.movieReview(.tappedReview(review.id)))
                         }
                     }
