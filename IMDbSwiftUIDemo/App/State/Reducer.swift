@@ -10,13 +10,12 @@ import Foundation
 typealias Reducer<State> = (State, Action) -> State
 
 let rootReducer: Reducer<ISDAppState> = { state, action in
-    debugPrint(":LOG: reducer", String(describing: action).prefix(100))
-    return ISDAppState(
-            dashboard: dashboardReducer(state.dashboard, action),
-            movieDetail: movieDetailReducer(state.movieDetail, action),
-            movieReviews: movieReviewReducer(state.movieReviews, action),
-            search: searchReducer(state.search, action)
-        )
+    ISDAppState(
+        dashboard: dashboardReducer(state.dashboard, action),
+        movieDetail: movieDetailReducer(state.movieDetail, action),
+        movieReviews: movieReviewReducer(state.movieReviews, action),
+        search: searchReducer(state.search, action)
+    )
 }
 
 let dashboardReducer: Reducer<ISDDashboardState> = { state, action in
@@ -106,15 +105,11 @@ let searchReducer: Reducer<ISDSearchState> = { state, action in
         state.searchUserInput = query
 
     case .search(let query):
-        guard !state.searchUserInput.isEmpty else { break }
-
         state.error = nil
         state.activeSearchQuery = query
         state.isSearching = true
 
     case .searchResultsLoaded(let movies):
-        guard !state.searchUserInput.isEmpty else { break }
-
         state.error = nil
         state.searchResults = movies
         state.isSearching = false

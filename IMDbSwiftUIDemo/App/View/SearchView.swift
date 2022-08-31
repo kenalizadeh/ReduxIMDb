@@ -68,12 +68,12 @@ struct SearchView: View {
         ) { text in
             store.dispatch(ISDAction.search(.search(text)))
         }
-        .onReceive(
-            searchTextSubject
-                .filter { $0.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty }
-        ) { text in
-            store.dispatch(ISDAction.search(.cancelSearch))
-        }
+//        .onReceive(
+//            searchTextSubject
+//                .filter { $0.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty }
+//        ) { text in
+//            store.dispatch(ISDAction.search(.cancelSearch))
+//        }
     }
 }
 

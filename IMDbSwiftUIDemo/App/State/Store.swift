@@ -15,6 +15,7 @@ class Store<State>: ObservableObject {
     private(set) var state: State
     private let _reducer: Reducer<State>
     private let _middlewares: [Middleware<State>]
+    private let _thunks: [Thunk<State>]
     private let _queue = DispatchQueue(label: "Store.Queue", qos: .userInitiated)
     private var _subscriptions: Set<AnyCancellable> = []
 
@@ -23,16 +24,18 @@ class Store<State>: ObservableObject {
     init(
         initial: State,
         reducer: @escaping Reducer<State>,
-        middlewares: [Middleware<State>] = []
+        middlewares: [Middleware<State>] = [],
+        thunks: [Thunk<State>] = []
     ) {
         self.state = initial
         self._reducer = reducer
         self._middlewares = middlewares
+        self._thunks = thunks
 
         // Middlewares are action pre-processors acting before the root reducer.
         self._middlewares.reduce(_actionSubject.eraseToAnyPublisher()) { partialResult, middleware in
             partialResult
-                .flatMap { middleware(self, $0) }
+                .map { middleware(self.state, $0) }
                 .eraseToAnyPublisher()
         }
         .receive(on: DispatchQueue.main)
@@ -42,7 +45,6 @@ class Store<State>: ObservableObject {
 
     func dispatch(_ action: Action) {
         _queue.async {
-            print(":LOG: dispatched", String(describing: action).prefix(100))
             self._actionSubject.send(action)
         }
     }
@@ -52,8 +54,14 @@ class Store<State>: ObservableObject {
         // A pure function is a function that, when given the same inputs, produces the same outputs and has no side effects.
         // A reducer will receive everything that it needs as parameters. It has no ties to any outside entities.
         // It does not change the existing state. It only produces a new State value.
-        let newState = self._reducer(self.state, action)
+        let newState = _reducer(state, action)
 
-        self.state = newState
+        _thunks.forEach { thunk in
+            thunk(newState, action)
+                .sink(receiveValue: dispatch)
+                .store(in: &_subscriptions)
+        }
+
+        state = newState
     }
 }

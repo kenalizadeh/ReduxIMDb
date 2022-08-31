@@ -86,8 +86,8 @@ struct ContentView_Previews: PreviewProvider {
                 ISDStore(
                     initial: ISDAppState(),
                     reducer: rootReducer,
-                    middlewares: [
-                        recentlyViewedMoviesMiddleware
+                    thunks: [
+                        recentlyViewedMoviesThunk
                     ]
                 )
             )
