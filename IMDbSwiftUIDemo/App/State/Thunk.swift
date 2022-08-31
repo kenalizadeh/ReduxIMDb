@@ -8,41 +8,31 @@
 import Foundation
 import Combine
 
-let mostPopularMoviesThunk: Middleware<ISDAppState> = { _, action in
-    guard let action = action as? ISDAction else { return Just(action).eraseToAnyPublisher() }
+let mostPopularMoviesThunk: Middleware<ISDAppState> = { store, action in
+    guard
+        let action = action as? ISDAction,
+        case .launch = action
+    else { return Just(action).eraseToAnyPublisher() }
 
-    guard case .launch = action else { return Just(action).eraseToAnyPublisher() }
-
-    let networkService = PopularMoviesNetworkService()
-
-    defer {
-        networkService.send()
-    }
-
-    return networkService
-        .$responseDTO
+    return PopularMoviesNetworkService()
+        .makePublisher()
         .compactMap { $0 }
         .map(\.items)
         .map { $0.map(Movie.init(from:)) }
         .map { ISDAction.dashboard(.moviesLoaded($0)) }
-        .prepend(action)
+        .catch({ Just(ISDAction.dashboard(.showError($0))) })
+        .map { _action in
+            store.dispatch(_action)
+            return action
+        }
         .eraseToAnyPublisher()
 }
 
-let recentlyViewedMoviesThunk: Middleware<ISDAppState> = { _, action in
-    guard let action = action as? ISDAction else { return Just(action).eraseToAnyPublisher() }
-
-    guard case let .movieDetail(.movieDetailLoaded(movieDetail)) = action else { return Just(action).eraseToAnyPublisher() }
-
-    return Just(ISDAction.dashboard(.markMovieViewed(Movie.init(from: movieDetail))))
-        .prepend(action)
-        .eraseToAnyPublisher()
-}
-
-let searchMoviesThunk: Middleware<ISDAppState> = { _, action in
-    guard let action = action as? ISDAction else { return Just(action).eraseToAnyPublisher() }
-
-    guard case let .search(.search(query)) = action else { return Just(action).eraseToAnyPublisher() }
+let searchMoviesThunk: Middleware<ISDAppState> = { store, action in
+    guard
+        let action = action as? ISDAction,
+        case let .search(.search(query)) = action
+    else { return Just(action).eraseToAnyPublisher() }
 
     return SearchNetworkService(searchQuery: query)
         .makePublisher()
@@ -50,15 +40,18 @@ let searchMoviesThunk: Middleware<ISDAppState> = { _, action in
         .map { $0.map(Movie.init(from:)) }
         .map({ ISDAction.search(.searchResultsLoaded($0)) })
         .catch({ _ in Empty().eraseToAnyPublisher() })
-        .prepend(action)
-        .receive(on: DispatchQueue.main)
+        .map {
+            store.dispatch($0)
+            return action
+        }
         .eraseToAnyPublisher()
 }
 
-let movieDetailThunk: Middleware<ISDAppState> = { _, action in
-    guard let action = action as? ISDAction else { return Just(action).eraseToAnyPublisher() }
-
-    guard case let .movieDetail(.viewLoaded(movieID)) = action else { return Just(action).eraseToAnyPublisher() }
+let movieDetailThunk: Middleware<ISDAppState> = { store, action in
+    guard
+        let action = action as? ISDAction,
+        case let .movieDetail(.viewLoaded(movieID)) = action
+    else { return Just(action).eraseToAnyPublisher() }
 
     return MovieDetailNetworkService(movieID: movieID)
         .makePublisher()
@@ -66,15 +59,19 @@ let movieDetailThunk: Middleware<ISDAppState> = { _, action in
         .map(MovieDetail.init(from:))
         .map({ ISDAction.movieDetail(.movieDetailLoaded($0)) })
         .catch({ Just(ISDAction.movieDetail(.showError($0))) })
-        .prepend([action, ISDAction.movieDetail(.clear)])
-        .receive(on: DispatchQueue.main)
+        .map {
+            store.dispatch($0)
+            return action
+        }
+        .prepend(ISDAction.movieDetail(.clear))
         .eraseToAnyPublisher()
 }
 
-let movieReviewsThunk: Middleware<ISDAppState> = { _, action in
-    guard let action = action as? ISDAction else { return Just(action).eraseToAnyPublisher() }
-
-    guard case let .movieReview(.viewLoaded(movieID)) = action else { return Just(action).eraseToAnyPublisher() }
+let movieReviewsThunk: Middleware<ISDAppState> = { store, action in
+    guard
+        let action = action as? ISDAction,
+        case let .movieReview(.viewLoaded(movieID)) = action
+    else { return Just(action).eraseToAnyPublisher() }
 
     return MovieReviewsNetworkService(movieID: movieID)
         .makePublisher()
@@ -83,7 +80,10 @@ let movieReviewsThunk: Middleware<ISDAppState> = { _, action in
         .map { $0.map(MovieReview.init(from:)) }
         .map({ ISDAction.movieReview(.movieReviewsLoaded($0)) })
         .catch({ Just(ISDAction.movieReview(.showError($0))) })
-        .prepend([action, ISDAction.movieReview(.clear)])
-        .receive(on: DispatchQueue.main)
+        .map {
+            store.dispatch($0)
+            return action
+        }
+        .prepend(ISDAction.movieReview(.clear))
         .eraseToAnyPublisher()
 }

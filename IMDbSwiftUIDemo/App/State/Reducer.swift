@@ -10,92 +10,120 @@ import Foundation
 typealias Reducer<State> = (State, Action) -> State
 
 let rootReducer: Reducer<ISDAppState> = { state, action in
+    debugPrint(":LOG: reducer", String(describing: action).prefix(100))
+    return ISDAppState(
+            dashboard: dashboardReducer(state.dashboard, action),
+            movieDetail: movieDetailReducer(state.movieDetail, action),
+            movieReviews: movieReviewReducer(state.movieReviews, action),
+            search: searchReducer(state.search, action)
+        )
+}
+
+let dashboardReducer: Reducer<ISDDashboardState> = { state, action in
+    guard case let ISDAction.dashboard(action) = action else { return state }
+
     var state = state
 
-    switch action as? ISDAction {
-    case .launch:
-        break
+    switch action {
+    case .moviesLoaded(let movies):
+        state.movies = movies
 
-    case .dashboard(let action):
-        switch action {
-        case .moviesLoaded(let movies):
-            state.dashboard.movies = movies
-
-        case .markMovieViewed(let movie):
-            if let index = state.dashboard.recentlyViewedMovies.firstIndex(of: movie) {
-                state.dashboard.recentlyViewedMovies.remove(at: index)
-            }
-
-            state.dashboard.recentlyViewedMovies.append(movie)
+    case .markMovieViewed(let movie):
+        if let index = state.recentlyViewedMovies.firstIndex(of: movie) {
+            state.recentlyViewedMovies.remove(at: index)
         }
 
-    case .search(let action):
-        switch action {
-        case .queryUserInput(let query):
-            state.search.searchUserInput = query
+        state.recentlyViewedMovies.append(movie)
 
-        case .search(let query):
-            guard !state.search.searchUserInput.isEmpty else { break }
+    case .showError(let error):
+        state.error = error
+        state.isLoading = false
+    }
 
-            state.search.error = nil
-            state.search.activeSearchQuery = query
-            state.search.isSearching = true
+    return state
+}
 
-        case .searchResultsLoaded(let movies):
-            guard !state.search.searchUserInput.isEmpty else { break }
+let movieDetailReducer: Reducer<ISDMovieDetailState> = { state, action in
+    guard case let ISDAction.movieDetail(action) = action else { return state }
 
-            state.search.error = nil
-            state.search.searchResults = movies
-            state.search.isSearching = false
+    var state = state
 
-        case .cancelSearch:
-            state.search = .init()
+    switch action {
+    case .viewLoaded(let movieID):
+        state.movieID = movieID
+        state.isLoading = true
 
-        case .showError(let error):
-            state.search.error = error
-        }
+    case .movieDetailLoaded(let movie):
+        state.movie = movie
+        state.isLoading = false
 
-    case .movieDetail(let action):
-        switch action {
-        case .viewLoaded(let movieID):
-            state.movieDetail.movieID = movieID
-            state.movieDetail.isLoading = true
+    case .clear:
+        state = .init()
 
-        case .movieDetailLoaded(let movie):
-            state.movieDetail.movie = movie
-            state.movieDetail.isLoading = false
+    case .showError(let error):
+        state.error = error
+        state.isLoading = false
+    }
 
-        case .clear:
-            state.movieDetail = .init()
+    return state
+}
 
-        case .showError(let error):
-            state.movieDetail.error = error
-            state.movieDetail.isLoading = false
-        }
+let movieReviewReducer: Reducer<ISDMovieReviewState> = { state, action in
+    guard case let ISDAction.movieReview(action) = action else { return state }
 
-    case .movieReview(let action):
-        switch action {
-        case .viewLoaded(let movieID):
-            state.movieReviews.movieID = movieID
-            state.movieReviews.isLoading = true
+    var state = state
 
-        case .movieReviewsLoaded(let reviews):
-            state.movieReviews.reviews = reviews
-            state.movieReviews.isLoading = false
+    switch action {
+    case .viewLoaded(let movieID):
+        state.movieID = movieID
+        state.isLoading = true
 
-        case .tappedReview(let reviewID):
-            state.movieReviews.expandedMovieReviewID = state.movieReviews.expandedMovieReviewID == reviewID ? "" : reviewID
+    case .movieReviewsLoaded(let reviews):
+        state.reviews = reviews
+        state.isLoading = false
 
-        case .clear:
-            state.movieReviews = .init()
+    case .tappedReview(let reviewID):
+        state.expandedMovieReviewID = state.expandedMovieReviewID == reviewID ? "" : reviewID
 
-        case .showError(let error):
-            state.movieReviews.error = error
-            state.movieReviews.isLoading = false
-        }
+    case .clear:
+        state = .init()
 
-    case .none:
-        break
+    case .showError(let error):
+        state.error = error
+        state.isLoading = false
+    }
+
+    return state
+}
+
+let searchReducer: Reducer<ISDSearchState> = { state, action in
+    guard case let ISDAction.search(action) = action else { return state }
+
+    var state = state
+
+    switch action {
+    case .queryUserInput(let query):
+        state.searchUserInput = query
+
+    case .search(let query):
+        guard !state.searchUserInput.isEmpty else { break }
+
+        state.error = nil
+        state.activeSearchQuery = query
+        state.isSearching = true
+
+    case .searchResultsLoaded(let movies):
+        guard !state.searchUserInput.isEmpty else { break }
+
+        state.error = nil
+        state.searchResults = movies
+        state.isSearching = false
+
+    case .cancelSearch:
+        state = .init()
+
+    case .showError(let error):
+        state.error = error
     }
 
     return state

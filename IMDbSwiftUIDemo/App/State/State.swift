@@ -26,6 +26,8 @@ struct ISDSearchState {
 struct ISDDashboardState {
     var movies: Movies = []
     var recentlyViewedMovies: Movies = []
+    var isLoading: Bool = false
+    var error: Error? = nil
 }
 
 struct ISDMovieDetailState {

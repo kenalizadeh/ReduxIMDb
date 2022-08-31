@@ -32,16 +32,17 @@ class Store<State>: ObservableObject {
         // Middlewares are action pre-processors acting before the root reducer.
         self._middlewares.reduce(_actionSubject.eraseToAnyPublisher()) { partialResult, middleware in
             partialResult
-                .flatMap { middleware(self.state, $0) }
+                .flatMap { middleware(self, $0) }
                 .eraseToAnyPublisher()
         }
-        .subscribe(on: _queue)
+        .receive(on: DispatchQueue.main)
         .sink(receiveValue: _dispatch)
         .store(in: &_subscriptions)
     }
 
     func dispatch(_ action: Action) {
-        _queue.sync {
+        _queue.async {
+            print(":LOG: dispatched", String(describing: action).prefix(100))
             self._actionSubject.send(action)
         }
     }
@@ -51,7 +52,7 @@ class Store<State>: ObservableObject {
         // A pure function is a function that, when given the same inputs, produces the same outputs and has no side effects.
         // A reducer will receive everything that it needs as parameters. It has no ties to any outside entities.
         // It does not change the existing state. It only produces a new State value.
-        let newState = _reducer(self.state, action)
+        let newState = self._reducer(self.state, action)
 
         self.state = newState
     }

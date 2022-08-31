@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 protocol Action {}
 
@@ -23,6 +24,7 @@ enum ISDAction: Action {
 enum ISDDashboardAction: Action {
     case moviesLoaded(Movies)
     case markMovieViewed(Movie)
+    case showError(Error)
 }
 
 enum ISDSearchAction: Action {
