@@ -89,7 +89,7 @@ class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDT
             }
             #if DEBUG
             .mapError {
-                print(":LOG: NetworkError:", $0)
+                print(":LOG: NetworkError: \(ResponseDTO.self)", $0)
                 return $0
             }
             #endif

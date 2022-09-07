@@ -18,13 +18,10 @@ struct IMDbSwiftUIDemoApp: App {
             loggerMiddleware,
             searchMiddleware,
             mostPopularMoviesThunk,
-            recentlyViewedMoviesThunk,
             movieDetailThunk,
-//            mostPopularMoviesThunk,
-//            recentlyViewedMoviesThunk,
-//            searchMoviesThunk,
-//            movieDetailThunk,
-//            movieReviewsThunk
+            recentlyViewedMoviesThunk,
+            searchMoviesThunk,
+            movieReviewsThunk
         ]
     )
 
