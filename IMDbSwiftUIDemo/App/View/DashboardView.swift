@@ -71,6 +71,9 @@ struct DashboardView: View {
                     }
                 }
             }
+//            .onAppear {
+//                store.dispatch(mostPopularMoviesThunk())
+//            }
             .searchable(text: $searchText, prompt: "Search movies") {
                 SearchView($searchText)
             }
@@ -86,8 +89,8 @@ struct ContentView_Previews: PreviewProvider {
                 ISDStore(
                     initial: ISDAppState(),
                     reducer: rootReducer,
-                    thunks: [
-                        recentlyViewedMoviesThunk
+                    middlewares: [
+//                        recentlyViewedMoviesThunk
                     ]
                 )
             )

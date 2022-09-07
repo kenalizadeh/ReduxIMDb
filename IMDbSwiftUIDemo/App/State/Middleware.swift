@@ -8,27 +8,29 @@
 import Foundation
 import Combine
 
-typealias Middleware<State> = (State, Action) -> Action
+typealias Middleware<State> = (@escaping (Action) -> (), State, Action) -> AnyPublisher<Action, Never>
 
-let loggerMiddleware: Middleware<ISDAppState> = { _, action in
-    debugPrint(":LOGGER:", Date(), String(describing: action).prefix(100))
+let loggerMiddleware: Middleware<ISDAppState> = { _, _, action in
+    defer { debugPrint(":LOGGER:", Date(), String(describing: action).prefix(100)) }
 
-    return action
+    return Just(action).eraseToAnyPublisher()
 }
 
-let searchMiddleware: Middleware<ISDAppState> = { state, action in
+let searchMiddleware: Middleware<ISDAppState> = { _, state, action in
+    debugPrint(":LOG: searchMiddleware", Date(), String(describing: action).prefix(100))
+
     switch action as? ISDAction {
     case let .search(.queryUserInput(text)):
-        guard !text.isEmpty else { return ISDAction.search(.cancelSearch) }
+        guard !text.isEmpty else { return Just(ISDAction.search(.cancelSearch)).eraseToAnyPublisher() }
 
     case let .search(.searchResultsLoaded(movies)):
-        guard !state.search.searchUserInput.isEmpty else { return ISDAction.search(.cancelSearch) }
+        guard !state.search.searchUserInput.isEmpty else { return Just(ISDAction.search(.cancelSearch)).eraseToAnyPublisher() }
 
     case let .search(.search(text)):
-        guard !state.search.searchUserInput.isEmpty else { return ISDAction.search(.cancelSearch) }
+        guard !state.search.searchUserInput.isEmpty else { return Just(ISDAction.search(.cancelSearch)).eraseToAnyPublisher() }
 
     default: break
     }
 
-    return action
+    return Just(action).eraseToAnyPublisher()
 }

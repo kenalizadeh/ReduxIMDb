@@ -15,7 +15,6 @@ class Store<State>: ObservableObject {
     private(set) var state: State
     private let _reducer: Reducer<State>
     private let _middlewares: [Middleware<State>]
-    private let _thunks: [Thunk<State>]
     private let _queue = DispatchQueue(label: "Store.Queue", qos: .userInitiated)
     private var _subscriptions: Set<AnyCancellable> = []
 
@@ -24,18 +23,24 @@ class Store<State>: ObservableObject {
     init(
         initial: State,
         reducer: @escaping Reducer<State>,
-        middlewares: [Middleware<State>] = [],
-        thunks: [Thunk<State>] = []
+        middlewares: [Middleware<State>] = []
     ) {
         self.state = initial
         self._reducer = reducer
         self._middlewares = middlewares
-        self._thunks = thunks
 
-        // Middlewares are action pre-processors acting before the root reducer.
         self._middlewares.reduce(_actionSubject.eraseToAnyPublisher()) { partialResult, middleware in
             partialResult
-                .map { middleware(self.state, $0) }
+                .flatMap { action in
+//                    if let _action = action as? Thunk<State> {
+//                        _action.body(self.state)
+//                            .sink(receiveValue: self.dispatch)
+//                            .store(in: &self._subscriptions)
+//                        return Just(action).eraseToAnyPublisher()
+//                    } else {
+                        return middleware(self.dispatch, self.state, action)
+//                    }
+                }
                 .eraseToAnyPublisher()
         }
         .receive(on: DispatchQueue.main)
@@ -45,22 +50,14 @@ class Store<State>: ObservableObject {
 
     func dispatch(_ action: Action) {
         _queue.async {
+            debugPrint(":LOG: dispatch", Date(), String(describing: action).prefix(100))
             self._actionSubject.send(action)
         }
     }
 
     private func _dispatch(_ action: Action) {
-        // In Redux, a reducer is a pure function that takes the current state and the action to execute as parameters and produces a new state.
-        // A pure function is a function that, when given the same inputs, produces the same outputs and has no side effects.
-        // A reducer will receive everything that it needs as parameters. It has no ties to any outside entities.
-        // It does not change the existing state. It only produces a new State value.
+        debugPrint(":LOG: reducer phase", Date(), String(describing: action).prefix(100))
         let newState = _reducer(state, action)
-
-        _thunks.forEach { thunk in
-            thunk(newState, action)
-                .sink(receiveValue: dispatch)
-                .store(in: &_subscriptions)
-        }
 
         state = newState
     }

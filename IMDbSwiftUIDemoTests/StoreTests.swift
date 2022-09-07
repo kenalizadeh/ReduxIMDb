@@ -19,8 +19,6 @@ struct FakeState {
 }
 
 let fakeReducer: Reducer<FakeState> = { state, action in
-    debugPrint(":LOG: reducer", state.val, action)
-
     guard let action = action as? FakeAction, case let .custom(val) = action else { return state }
 
     var state = state
@@ -31,8 +29,6 @@ let fakeReducer: Reducer<FakeState> = { state, action in
 }
 
 let middleWare1: Middleware<FakeState> = { state, action in
-    debugPrint(":LOG: middleWare1 state.val", state.val, action)
-
     guard let action = action as? FakeAction, case let .custom(val) = action else { return Just(action).eraseToAnyPublisher() }
 
     let newVal = val + " middleWare1"
@@ -41,8 +37,6 @@ let middleWare1: Middleware<FakeState> = { state, action in
 }
 
 let middleWare2: Middleware<FakeState> = { state, action in
-    debugPrint(":LOG: middleWare2 state.val", state.val, action)
-
     guard let action = action as? FakeAction, case let .custom(val) = action else { return Just(action).eraseToAnyPublisher() }
 
     let newVal = val + " middleWare2"
@@ -51,26 +45,11 @@ let middleWare2: Middleware<FakeState> = { state, action in
 }
 
 let middleWare3: Middleware<FakeState> = { state, action in
-    debugPrint(":LOG: middleWare3 state.val", state.val, action)
-
     guard let action = action as? FakeAction, case let .custom(val) = action else { return Just(action).eraseToAnyPublisher() }
 
     let newVal = val + " middleWare3"
 
     return Just(FakeAction.custom(newVal)).eraseToAnyPublisher()
-}
-
-let thunk1: Middleware<FakeState> = { state, action in
-    debugPrint(":LOG: thunk state.val", state.val, action)
-
-    guard let action = action as? FakeAction, case let .custom(val) = action else { return Just(action).eraseToAnyPublisher() }
-
-    let newVal = val + " thunk"
-
-    return Just(ThunkAction(FakeAction.custom("THUUUUUUUUNK")))
-        .delay(for: 0.2, scheduler: DispatchQueue.main)
-        .prepend(FakeAction.custom(newVal))
-        .eraseToAnyPublisher()
 }
 
 final class StoreTests: XCTestCase {
@@ -79,7 +58,6 @@ final class StoreTests: XCTestCase {
         reducer: fakeReducer,
         middlewares: [
             middleWare1,
-            thunk1,
             middleWare2,
             middleWare3
         ]
