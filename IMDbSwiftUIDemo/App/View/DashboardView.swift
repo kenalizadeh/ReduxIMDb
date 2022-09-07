@@ -10,10 +10,6 @@ import SwiftUI
 struct DashboardView: View {
     @EnvironmentObject var store: ISDStore
 
-    // SwiftUI uses @State to allow you to modify values inside a struct, which would normally not be allowed because structs are value types.
-    // A PassthroughSubject broadcasts elements to downstream subscribers and provides a convenient way to adapt existing imperative code to Combine. As the name suggests, this type of subject only passes through values meaning that it does not capture any state and will drop values if there aren’t any subscribers set.
-    // A CurrentValueSubject wraps a single value and publishes a new element whenever the value changes. A new element is published even if the updated value equals the current value. Unlike the PassthroughSubject, a CurrentValueSubject always holds a value. A new subscriber will directly receive the current value contained in the subject.
-    // Ref: https://www.avanderlee.com/combine/passthroughsubject-currentvaluesubject-explained/
     @State
     var searchText: String = ""
 
@@ -71,9 +67,6 @@ struct DashboardView: View {
                     }
                 }
             }
-//            .onAppear {
-//                store.dispatch(mostPopularMoviesThunk())
-//            }
             .searchable(text: $searchText, prompt: "Search movies") {
                 SearchView($searchText)
             }
@@ -90,7 +83,7 @@ struct ContentView_Previews: PreviewProvider {
                     initial: ISDAppState(),
                     reducer: rootReducer,
                     middlewares: [
-//                        recentlyViewedMoviesThunk
+                        recentlyViewedMoviesThunk
                     ]
                 )
             )
