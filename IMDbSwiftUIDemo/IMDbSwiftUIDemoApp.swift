@@ -16,8 +16,10 @@ struct IMDbSwiftUIDemoApp: App {
         reducer: rootReducer,
         middlewares: [
             loggerMiddleware,
-            mostPopularMoviesThunk
-//            searchMiddleware,
+            searchMiddleware,
+            mostPopularMoviesThunk,
+            recentlyViewedMoviesThunk,
+            movieDetailThunk,
 //            mostPopularMoviesThunk,
 //            recentlyViewedMoviesThunk,
 //            searchMoviesThunk,

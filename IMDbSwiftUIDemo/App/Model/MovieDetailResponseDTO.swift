@@ -16,7 +16,7 @@ struct MovieDetailResponseDTO: ResponseDTOProtocol {
     let year: String
     let image: String
     let releaseDate: String
-    let runtimeStr: String
+    let runtimeStr: String?
     let plotLocal: String
     let directorList: [MovieWriterDirectorDTO]
     let writerList: [MovieWriterDirectorDTO]

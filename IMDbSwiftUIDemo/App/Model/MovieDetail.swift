@@ -15,7 +15,7 @@ struct MovieDetail: Identifiable {
     let year: String
     let image: ImageURLString
     let releaseDate: String
-    let runtimeStr: String
+    let runtimeStr: String?
     let plotLocal: String
     let directors: [String]
     let writers: [String]

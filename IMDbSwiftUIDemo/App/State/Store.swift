@@ -31,16 +31,7 @@ class Store<State>: ObservableObject {
 
         self._middlewares.reduce(_actionSubject.eraseToAnyPublisher()) { partialResult, middleware in
             partialResult
-                .flatMap { action in
-//                    if let _action = action as? Thunk<State> {
-//                        _action.body(self.state)
-//                            .sink(receiveValue: self.dispatch)
-//                            .store(in: &self._subscriptions)
-//                        return Just(action).eraseToAnyPublisher()
-//                    } else {
-                        return middleware(self.dispatch, self.state, action)
-//                    }
-                }
+                .flatMap { middleware(self.dispatch, self.state, $0) }
                 .eraseToAnyPublisher()
         }
         .receive(on: DispatchQueue.main)
