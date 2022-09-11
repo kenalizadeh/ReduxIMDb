@@ -40,9 +40,15 @@ struct SearchView: View {
 
                 if let movies = store.state.search.searchResults {
                     ForEach(movies) { movie in
-                        NavigationLink(value: Route.movieDetail(movie)) {
-                            MovieCell(movie: movie)
-                        }
+                        NavigationLink(
+                            destination: {
+                                MovieDetailView(movieID: movie.id)
+                                    .navigationTitle(movie.title)
+                            },
+                            label: {
+                                MovieCell(movie: movie)
+                            }
+                        )
                     }
                 } else if store.state.search.isSearching && store.state.search.searchResults.isEmpty {
                     Text("No results")

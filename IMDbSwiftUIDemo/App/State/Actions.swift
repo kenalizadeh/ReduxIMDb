@@ -1,5 +1,5 @@
 //
-//  Action.swift
+//  Actions.swift
 //  IMDbSwiftUIDemo
 //
 //  Created by Kenan Alizadeh on 14.08.22.
@@ -7,8 +7,6 @@
 
 import Foundation
 import Combine
-
-protocol Action {}
 
 typealias MovieID = String
 typealias MovieReviewID = String

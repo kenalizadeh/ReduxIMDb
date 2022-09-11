@@ -60,11 +60,17 @@ struct MovieDetailView: View {
                         ScrollView(.horizontal) {
                             LazyHStack {
                                 ForEach(movie.similarMovies) { movie in
-                                    NavigationLink(value: Route.movieDetail(movie)) {
-                                        HorizontalMovieCell(movie: movie)
-                                            .frame(width: proxy.size.height / 6, height: proxy.size.height / 3)
-                                            .clipShape(RoundedRectangle(cornerRadius: 4))
-                                    }
+                                    NavigationLink(
+                                        destination: {
+                                            MovieDetailView(movieID: movie.id)
+                                                .navigationTitle(movie.title)
+                                        },
+                                        label: {
+                                            HorizontalMovieCell(movie: movie)
+                                                .frame(width: proxy.size.height / 6, height: proxy.size.height / 3)
+                                                .clipShape(RoundedRectangle(cornerRadius: 4))
+                                        }
+                                    )
                                 }
                             }
                             .padding(.horizontal, 10)

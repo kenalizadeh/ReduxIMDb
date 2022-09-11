@@ -1,5 +1,5 @@
 //
-//  Middleware.swift
+//  Middlewares.swift
 //  IMDbSwiftUIDemo
 //
 //  Created by Kenan Alizadeh on 14.08.22.
@@ -7,8 +7,6 @@
 
 import Foundation
 import Combine
-
-typealias Middleware<State> = (@escaping (Action) -> (), State, Action) -> AnyPublisher<Action, Never>
 
 let loggerMiddleware: Middleware<ISDAppState> = { _, _, action in
     defer { debugPrint(":LOGGER:", Date(), String(describing: action).prefix(100)) }

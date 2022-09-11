@@ -82,6 +82,16 @@ class BaseNetworkService<RequestDTO: RequestDTOProtocol, ResponseDTO: ResponseDT
                     self.successStatusCodes.contains(httpResponse.statusCode)
                 else { throw URLError(.badServerResponse) }
 
+                #if DEBUG
+                print(":LOG: \(type(of: ResponseDTO.self)) START")
+                if let jsonString = try data.json() {
+                    print(":LOG:", jsonString)
+                } else {
+                    print(":LOG: Data could not be parsed as a valid JSON")
+                }
+                print(":LOG: \(type(of: ResponseDTO.self)) END")
+                #endif
+
                 // Check data
                 let decoded = try JSONDecoder().decode(ResponseDTO.self, from: data)
                 self.processData(decoded)

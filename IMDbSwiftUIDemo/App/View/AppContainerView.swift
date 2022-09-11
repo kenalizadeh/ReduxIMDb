@@ -11,22 +11,8 @@ struct AppContainerView: View {
     @EnvironmentObject var store: ISDStore
 
     var body: some View {
-        NavigationStack {
+        NavigationView {
             DashboardView()
-                .navigationDestination(for: Route.self) { route in
-                    switch route {
-                    case .dashboard:
-                        DashboardView()
-
-                    case .movieDetail(let movie):
-                        MovieDetailView(movieID: movie.id)
-                            .navigationTitle(movie.title)
-
-                    case .movieReviews(let movie):
-                        MovieReviewsView(movieID: movie.id)
-                            .navigationTitle(movie.title)
-                    }
-                }
         }
         .onAppear {
             store.dispatch(ISDAction.launch)

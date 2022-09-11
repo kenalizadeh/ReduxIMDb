@@ -1,5 +1,5 @@
 //
-//  Thunk.swift
+//  Thunks.swift
 //  IMDbSwiftUIDemo
 //
 //  Created by Kenan Alizadeh on 19.08.22.
@@ -7,20 +7,6 @@
 
 import Foundation
 import Combine
-
-func makeThunk<State>(_ body: @escaping (State, Action) -> AnyPublisher<Action, Never>) -> Middleware<State> {
-    return { dispatch, state, action in
-        body(state, action)
-            .flatMap { action -> AnyPublisher<Action, Never> in
-                dispatch(action)
-
-                return Empty()
-                    .eraseToAnyPublisher()
-            }
-            .prepend(action)
-            .eraseToAnyPublisher()
-    }
-}
 
 let mostPopularMoviesThunk: Middleware<ISDAppState> = makeThunk { _, action in
     guard
@@ -57,7 +43,7 @@ let movieDetailThunk: Middleware<ISDAppState> = makeThunk { _, action in
         .eraseToAnyPublisher()
 }
 
-let recentlyViewedMoviesThunk: Middleware<ISDAppState> = makeThunk { state, action in
+let recentlyViewedMoviesThunk: Middleware<ISDAppState> = makeThunk { _, action in
     guard
         let action = action as? ISDAction,
         case let .movieDetail(.movieDetailLoaded(movieDetail)) = action
@@ -69,7 +55,7 @@ let recentlyViewedMoviesThunk: Middleware<ISDAppState> = makeThunk { state, acti
         .eraseToAnyPublisher()
 }
 
-let searchMoviesThunk: Middleware<ISDAppState> = makeThunk { state, action in
+let searchMoviesThunk: Middleware<ISDAppState> = makeThunk { _, action in
     guard
         let action = action as? ISDAction,
         case let .search(.search(query)) = action
@@ -77,7 +63,7 @@ let searchMoviesThunk: Middleware<ISDAppState> = makeThunk { state, action in
 
     debugPrint(":LOG: searchMoviesThunk", Date(), String(describing: action).prefix(100))
 
-    return SearchNetworkService(searchQuery: state.search.activeSearchQuery)
+    return SearchNetworkService(searchQuery: query)
         .makePublisher()
         .map(\.results)
         .map { $0.map(Movie.init(from:)) }
@@ -86,12 +72,11 @@ let searchMoviesThunk: Middleware<ISDAppState> = makeThunk { state, action in
         .eraseToAnyPublisher()
 }
 
-let movieReviewsThunk: Middleware<ISDAppState> = makeThunk { state, action in
+let movieReviewsThunk: Middleware<ISDAppState> = makeThunk { _, action in
     guard
         let action = action as? ISDAction,
         case let .movieReview(.viewLoaded(movieID)) = action
     else { return Empty().eraseToAnyPublisher() }
-    guard let movieID = state.movieReviews.movieID else { return Empty().eraseToAnyPublisher() }
 
     debugPrint(":LOG: movieReviewsThunk", Date(), String(describing: action).prefix(100))
 

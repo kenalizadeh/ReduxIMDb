@@ -1,5 +1,5 @@
 //
-//  State.swift
+//  States.swift
 //  IMDbSwiftUIDemo
 //
 //  Created by Kenan Alizadeh on 14.08.22.

@@ -33,9 +33,15 @@ struct DashboardView: View {
                     }.padding(.horizontal, 10)
 
                     ForEach(movies) { movie in
-                        NavigationLink(value: Route.movieDetail(movie)) {
-                            MovieCell(movie: movie)
-                        }
+                        NavigationLink(
+                            destination: {
+                                MovieDetailView(movieID: movie.id)
+                                    .navigationTitle(movie.title)
+                            },
+                            label: {
+                                MovieCell(movie: movie)
+                            }
+                        )
                     }
 
                     if !recentlyViewedMovies.isEmpty {
@@ -53,11 +59,17 @@ struct DashboardView: View {
                         ScrollView(.horizontal) {
                             LazyHStack {
                                 ForEach(recentlyViewedMovies) { movie in
-                                    NavigationLink(value: Route.movieDetail(movie)) {
-                                        HorizontalMovieCell(movie: movie)
-                                            .frame(width: proxy.size.height / 6, height: proxy.size.height / 3)
-                                            .clipShape(RoundedRectangle(cornerRadius: 4))
-                                    }
+                                    NavigationLink(
+                                        destination: {
+                                            MovieDetailView(movieID: movie.id)
+                                                .navigationTitle(movie.title)
+                                        },
+                                        label: {
+                                            HorizontalMovieCell(movie: movie)
+                                                .frame(width: proxy.size.height / 6, height: proxy.size.height / 3)
+                                                .clipShape(RoundedRectangle(cornerRadius: 4))
+                                        }
+                                    )
                                     .animation(Animation.easeIn(duration: 0.5), value: recentlyViewedMovies)
                                 }
                             }

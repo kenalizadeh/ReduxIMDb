@@ -1,13 +1,11 @@
 //
-//  Reducer.swift
+//  Reducers.swift
 //  IMDbSwiftUIDemo
 //
 //  Created by Kenan Alizadeh on 14.08.22.
 //
 
 import Foundation
-
-typealias Reducer<State> = (State, Action) -> State
 
 let rootReducer: Reducer<ISDAppState> = { state, action in
     ISDAppState(

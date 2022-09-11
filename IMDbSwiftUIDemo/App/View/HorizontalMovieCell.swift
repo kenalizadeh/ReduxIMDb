@@ -52,20 +52,23 @@ struct HorizontalMovieCell_Previews: PreviewProvider {
                 ScrollView(.horizontal) {
                     LazyHStack {
                         ForEach(urls, id: \.self) { url in
-                            NavigationLink(value: "asdfg") {
-                                HorizontalMovieCell(
-                                    movie: .init(
-                                        from: .init(
-                                            id: "tt13314558",
-                                            title: "Day Shift",
-                                            image: "https://m.media-amazon.com/images/M/MV5BYWI2ZDRjYjEtOWJiOS00NWVjLWI1MjAtNWNiMzAwNGFmNjljXkEyXkFqcGdeQXVyODEwMTc2ODQ@._V1_Ratio0.7273_AL_.jpg",
-                                            imDBRating: nil
+                            NavigationLink(
+                                destination: {},
+                                label: {
+                                    HorizontalMovieCell(
+                                        movie: .init(
+                                            from: .init(
+                                                id: "tt13314558",
+                                                title: "Day Shift",
+                                                image: url,
+                                                imDBRating: nil
+                                            )
                                         )
                                     )
-                                )
-                                .frame(width: proxy.size.height / 6, height: proxy.size.height / 3)
-                                .clipped()
-                            }
+                                    .frame(width: proxy.size.height / 6, height: proxy.size.height / 3)
+                                    .clipped()
+                                }
+                            )
                         }
                     }
                 }

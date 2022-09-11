@@ -30,6 +30,7 @@ struct MovieReviewsView: View {
                             Text(review.content)
                                 .font(.footnote)
                                 .lineLimit(review.id == store.state.movieReviews.expandedMovieReviewID ? nil : 1)
+                                .animation(.spring(), value: store.state.movieReviews.expandedMovieReviewID)
                                 .multilineTextAlignment(.leading)
                         }
                         .padding(10)
